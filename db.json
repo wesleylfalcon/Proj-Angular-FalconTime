@@ -1,0 +1,35 @@
+{
+  "partners": [
+    {
+      "id": "1",
+      "name": "Parceiro Teste",
+      "document": "12.345.678/0001-90",
+      "contactName": "Responsável Teste",
+      "contactEmail": "contato@teste.com",
+      "hourlyRate": 75,
+      "active": true,
+      "createdAt": "2026-08-16T00:00:00.000Z"
+    },
+    {
+      "name": "Outro parceiro",
+      "document": "111111111111111111111111",
+      "contactName": "Fulano",
+      "contactEmail": "fulano@email.com",
+      "hourlyRate": 50,
+      "active": true,
+      "createdAt": "2026-08-20T20:19:55.972Z",
+      "id": "ky17yGwHjnI"
+    },
+    {
+      "name": "Parceiro",
+      "document": "3333333333333333",
+      "contactName": "Maria",
+      "contactEmail": "maria@email.com",
+      "hourlyRate": 60,
+      "active": true,
+      "createdAt": "2026-08-20T20:20:47.771Z",
+      "id": "3HaU0Aps31M"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
