@@ -1,24 +1,32 @@
 <nav class="sidebar">
-    <mat-nav-list>
+  <mat-nav-list>
+    <!-- Navegação para o dashboard -->
+    <a
+      mat-list-item
+      routerLink="/"
+      routerLinkActive="sidebar__item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon matListItemIcon>dashboard</mat-icon>
+      <span matListItemTitle>Dashboard</span>
+    </a>
 
-        <!-- Navegação para o dashboard -->
-        <a mat-list-item routerLink="/" routerLinkActive="sidebar__item--active"
-            [routerLinkActiveOptions]="{ exact: true }">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-        </a>
+    <!-- Navegação para o cadastro de parceiros -->
+    <a mat-list-item routerLink="/partners" routerLinkActive="sidebar__item--active">
+      <mat-icon matListItemIcon>handshake</mat-icon>
+      <span matListItemTitle>Parceiros</span>
+    </a>
 
-        <!-- Navegação para o cadastro de parceiros -->
-        <a mat-list-item routerLink="/partners" routerLinkActive="sidebar__item--active">
-            <mat-icon matListItemIcon>handshake</mat-icon>
-            <span matListItemTitle>Parceiros</span>
-        </a>
+    <!-- Navegação para o cadastro de projetos -->
+    <a mat-list-item routerLink="/projects" routerLinkActive="sidebar__item--active">
+      <mat-icon matListItemIcon>folder</mat-icon>
+      <span matListItemTitle>Projetos</span>
+    </a>
 
-        <!-- Navegação para o cadastro de projetos -->
-        <a mat-list-item routerLink="/projects" routerLinkActive="sidebar__item--active">
-            <mat-icon matListItemIcon>folder</mat-icon>
-            <span matListItemTitle>Projetos</span>
-        </a>
-
-    </mat-nav-list>
+    <!-- Navegação para apontamento de horas -->
+    <a mat-list-item routerLink="/time-entries">
+      <mat-icon matListItemIcon>schedule</mat-icon>
+      <span matListItemTitle>Apontamentos</span>
+    </a>
+  </mat-nav-list>
 </nav>

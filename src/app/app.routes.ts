@@ -19,6 +19,10 @@ export const routes: Routes = [
         path: 'projects',
         loadChildren: () => import('./projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
       },
+      {
+        path: 'time-entries',
+        loadChildren: () => import('./time-entries/time-entries.routes').then((m) => m.TIME_ENTRIES_ROUTES),
+      },
     ],
   },
 ];

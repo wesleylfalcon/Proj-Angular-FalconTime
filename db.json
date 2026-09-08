@@ -45,5 +45,20 @@
       "createdAt": "2026-08-26T00:00:00.000Z"
     }
   ],
+  "timeEntries": [
+    {
+      "id": "1",
+      "partnerId": "1",
+      "projectId": "1",
+      "startDate": "2026-08-25",
+      "endDate": null,
+      "hours": 12,
+      "description": "Desenvolvimento inicial do projeto.",
+      "hourlyRate": 75,
+      "totalValue": 900,
+      "status": "PENDING",
+      "createdAt": "2026-08-25T10:00:00.000Z"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }
