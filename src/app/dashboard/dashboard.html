@@ -1,2 +1,113 @@
-<h1>Falcon Time</h1>
-<p>Controle de projetos e horas.</p>
+<section class="app-page dashboard">
+  <div class="app-page__header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Visão geral dos projetos e apontamentos.</p>
+    </div>
+  </div>
+
+  <form class="app-filters" [formGroup]="filterForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Competência</mat-label>
+      <input matInput type="month" formControlName="competence" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Parceiro</mat-label>
+      <mat-select formControlName="partnerId">
+        <mat-option value="">Todos</mat-option>
+
+        @for (partner of partners$ | async; track partner.id) {
+          <mat-option [value]="partner.id">{{ partner.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Projeto</mat-label>
+      <mat-select formControlName="projectId">
+        <mat-option value="">Todos</mat-option>
+
+        @for (project of filteredProjects$ | async; track project.id) {
+          <mat-option [value]="project.id">{{ project.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="">Todos</mat-option>
+        <mat-option value="PENDING">Pendente</mat-option>
+        <mat-option value="BILLED">Faturado</mat-option>
+        <mat-option value="PAID">Pago</mat-option>
+        <mat-option value="CANCELLED">Cancelado</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="clearFilters()">
+      <mat-icon>filter_alt_off</mat-icon>
+      Limpar filtros
+    </button>
+  </form>
+
+  @if (summary$ | async; as summary) {
+    <div class="app-summary">
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Horas totais</span>
+        <strong class="app-summary-card__value">{{ summary.totalHours }}</strong>
+      </div>
+
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Valor total apontado</span>
+        <strong class="app-summary-card__value">
+          {{ summary.totalValue | currency: 'BRL' }}
+        </strong>
+      </div>
+
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Valor faturado</span>
+        <strong class="app-summary-card__value">
+          {{ summary.billedValue | currency: 'BRL' }}
+        </strong>
+      </div>
+
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Valor recebido</span>
+        <strong class="app-summary-card__value">
+          {{ summary.paidValue | currency: 'BRL' }}
+        </strong>
+      </div>
+    </div>
+  }
+
+  @if (charts$ | async; as charts) {
+    <div class="dashboard__charts">
+      <div class="app-panel dashboard__chart-card">
+        <h2>Horas por projeto</h2>
+
+        <div class="dashboard__chart-container">
+          <canvas
+            baseChart
+            [data]="charts.hoursByProject"
+            [options]="barChartOptions"
+            type="bar"
+          ></canvas>
+        </div>
+      </div>
+
+      <div class="app-panel dashboard__chart-card">
+        <h2>Valor por parceiro</h2>
+
+        <div class="dashboard__chart-container">
+          <canvas
+            baseChart
+            [data]="charts.valueByPartner"
+            [options]="barChartOptions"
+            type="bar"
+          ></canvas>
+        </div>
+      </div>
+    </div>
+  }
+</section>

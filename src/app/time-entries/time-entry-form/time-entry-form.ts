@@ -15,7 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 // RxJS
-import { combineLatest, map } from 'rxjs';
+import { combineLatest, map, shareReplay } from 'rxjs';
 
 // Interno
 import { PartnerService } from '../../partners/partner.service';
@@ -39,33 +39,22 @@ import { TimeEntryService } from '../time-entry.service';
   styleUrl: './time-entry-form.scss',
 })
 export class TimeEntryForm {
-  // Obtém as dependências utilizadas pelo formulário.
   private readonly formBuilder = inject(FormBuilder);
   private readonly projectService = inject(ProjectService);
   private readonly partnerService = inject(PartnerService);
-
-  // Serviços utilizados no cadastro do apontamento.
   private readonly timeEntryService = inject(TimeEntryService);
   private readonly dialogRef = inject(MatDialogRef<TimeEntryForm>);
 
-  // Recebe o apontamento quando o dialog é aberto para edição.
   readonly data = inject<TimeEntry | null>(MAT_DIALOG_DATA);
 
-  // Define os status disponíveis para o apontamento.
-  readonly statuses: {
-    value: TimeEntryStatus;
-    label: string;
-  }[] = [
+  readonly statuses: { value: TimeEntryStatus; label: string }[] = [
     { value: 'PENDING', label: 'Pendente' },
     { value: 'BILLED', label: 'Faturado' },
     { value: 'PAID', label: 'Pago' },
     { value: 'CANCELLED', label: 'Cancelado' },
   ];
 
-  /**
-   * Combina projetos e parceiros para facilitar o preenchimento
-   * automático dos dados relacionados ao projeto selecionado.
-   */
+  /** Combina projetos e parceiros para o preenchimento automático do formulário. */
   readonly projects$ = combineLatest([
     this.projectService.getProjects(),
     this.partnerService.getPartners(),
@@ -78,9 +67,12 @@ export class TimeEntryForm {
           'Parceiro não encontrado',
       })),
     ),
+    shareReplay({
+      bufferSize: 1,
+      refCount: true,
+    }),
   );
 
-  // Estrutura do formulário de apontamento.
   readonly form = this.formBuilder.nonNullable.group({
     projectId: ['', Validators.required],
     partnerId: ['', Validators.required],
@@ -96,46 +88,31 @@ export class TimeEntryForm {
   constructor() {
     if (this.data) {
       this.form.patchValue({
-        projectId: this.data.projectId,
-        partnerId: this.data.partnerId,
-        startDate: this.data.startDate,
+        ...this.data,
         endDate: this.data.endDate ?? '',
-        hours: this.data.hours,
-        description: this.data.description,
-        hourlyRate: this.data.hourlyRate,
-        totalValue: this.data.totalValue,
-        status: this.data.status,
       });
     }
   }
 
-  /**
-   * Preenche parceiro e valor/hora com base
-   * no projeto selecionado.
-   */
+  /** Preenche parceiro e valor/hora com base no projeto selecionado. */
   fillProjectData(projectId: string): void {
-    this.projects$.subscribe({
-      next: (projects) => {
-        const project = projects.find((item) => item.id === projectId);
+    this.projects$.subscribe((projects) => {
+      const project = projects.find((item) => item.id === projectId);
 
-        if (!project) {
-          return;
-        }
+      if (!project) {
+        return;
+      }
 
-        this.form.patchValue({
-          partnerId: project.partnerId,
-          hourlyRate: project.hourlyRate,
-        });
+      this.form.patchValue({
+        partnerId: project.partnerId,
+        hourlyRate: project.hourlyRate,
+      });
 
-        this.calculateTotalValue();
-      },
+      this.calculateTotalValue();
     });
   }
 
-  /**
-   * Calcula o valor total do apontamento
-   * com base nas horas e no valor/hora.
-   */
+  /** Recalcula o valor total com base em horas e valor/hora. */
   calculateTotalValue(): void {
     const hours = this.form.controls.hours.value;
     const hourlyRate = this.form.controls.hourlyRate.value;
@@ -143,9 +120,7 @@ export class TimeEntryForm {
     this.form.controls.totalValue.setValue(hours * hourlyRate);
   }
 
-  /**
-   * Valida o formulário e cria ou atualiza o apontamento.
-   */
+  /** Valida o formulário e cria ou atualiza o apontamento. */
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -154,37 +129,36 @@ export class TimeEntryForm {
 
     const formValue = this.form.getRawValue();
 
-    // Impede que a data final seja anterior à data inicial.
     if (formValue.endDate && formValue.endDate < formValue.startDate) {
+      this.form.controls.endDate.setErrors({ beforeStart: true });
+      this.form.controls.endDate.markAsTouched();
       return;
     }
+
+    if (this.form.controls.endDate.hasError('beforeStart')) {
+      this.form.controls.endDate.setErrors(null);
+    }
+
+    const normalizedEndDate = formValue.endDate || null;
 
     if (this.data) {
-      const updatedTimeEntry: TimeEntry = {
-        ...this.data,
-        ...formValue,
-        endDate: formValue.endDate || null,
-      };
-
-      this.timeEntryService.updateTimeEntry(updatedTimeEntry).subscribe({
-        next: () => {
-          this.dialogRef.close(true);
-        },
-      });
+      this.timeEntryService
+        .updateTimeEntry({
+          ...this.data,
+          ...formValue,
+          endDate: normalizedEndDate,
+        })
+        .subscribe(() => this.dialogRef.close(true));
 
       return;
     }
 
-    const newTimeEntry = {
-      ...formValue,
-      endDate: formValue.endDate || null,
-      createdAt: new Date().toISOString(),
-    };
-
-    this.timeEntryService.createTimeEntry(newTimeEntry).subscribe({
-      next: () => {
-        this.dialogRef.close(true);
-      },
-    });
+    this.timeEntryService
+      .createTimeEntry({
+        ...formValue,
+        endDate: normalizedEndDate,
+        createdAt: new Date().toISOString(),
+      })
+      .subscribe(() => this.dialogRef.close(true));
   }
 }

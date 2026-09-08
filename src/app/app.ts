@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+// Core
+import { Component } from '@angular/core';
+
+// Router
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App {
-  protected readonly title = signal('falcon-time');
-}
+export class App {}

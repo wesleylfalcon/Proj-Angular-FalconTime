@@ -1,67 +1,15 @@
-.time-entry-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-    }
-
-    p {
-      margin: 4px 0 0;
-      opacity: 0.7;
-    }
-
-    button {
-      flex-shrink: 0;
-    }
-  }
-
-  table {
-    width: 100%;
-  }
-
-  th {
-    font-weight: 600;
-  }
-
-  td,
-  th {
-    vertical-align: middle;
-  }
-
-  .mat-column-hours,
-  .mat-column-totalValue,
-  .mat-column-status,
-  .mat-column-actions {
-    white-space: nowrap;
-  }
-
-  .mat-column-actions {
-    width: 110px;
-    text-align: center;
-  }
+.time-entry-list__table {
+  min-width: 980px;
 }
 
-@media (max-width: 900px) {
-  .time-entry-list {
-    overflow-x: auto;
+.mat-column-hours,
+.mat-column-totalValue,
+.mat-column-status,
+.mat-column-actions {
+  white-space: nowrap;
+}
 
-    .header {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    table {
-      min-width: 900px;
-    }
-  }
+.mat-column-actions {
+  width: 110px;
+  text-align: center;
 }

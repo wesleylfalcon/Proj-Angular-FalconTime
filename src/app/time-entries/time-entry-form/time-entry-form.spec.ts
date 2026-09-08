@@ -1,6 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+// Testing
+import {
+  ComponentFixture,
+  TestBed,
+} from '@angular/core/testing';
+
+// Material
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+} from '@angular/material/dialog';
+
+// RxJS
+import { of } from 'rxjs';
+
+// Interno
+import { PartnerService } from '../../partners/partner.service';
+import { ProjectService } from '../../projects/project.service';
+import { TimeEntryService } from '../time-entry.service';
 import { TimeEntryForm } from './time-entry-form';
 
 describe('TimeEntryForm', () => {
@@ -9,9 +25,10 @@ describe('TimeEntryForm', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TimeEntryForm],
+      imports: [
+        TimeEntryForm,
+      ],
       providers: [
-        provideHttpClient(),
         {
           provide: MAT_DIALOG_DATA,
           useValue: null,
@@ -22,11 +39,34 @@ describe('TimeEntryForm', () => {
             close: () => {},
           },
         },
+
+        // Evita chamadas HTTP reais durante o teste unitário.
+        {
+          provide: ProjectService,
+          useValue: {
+            getProjects: () => of([]),
+          },
+        },
+        {
+          provide: PartnerService,
+          useValue: {
+            getPartners: () => of([]),
+          },
+        },
+        {
+          provide: TimeEntryService,
+          useValue: {},
+        },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TimeEntryForm);
+    fixture =
+      TestBed.createComponent(TimeEntryForm);
+
     component = fixture.componentInstance;
+
+    fixture.detectChanges();
+
     await fixture.whenStable();
   });
 

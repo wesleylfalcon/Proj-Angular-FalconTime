@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { ProjectService } from './project.service';
 
@@ -8,10 +8,7 @@ describe('ProjectService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ProjectService,
-        provideHttpClient()
-      ]
+      providers: [provideHttpClient()],
     });
 
     service = TestBed.inject(ProjectService);

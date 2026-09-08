@@ -1,5 +1,7 @@
+// Router
 import { Routes } from '@angular/router';
 
+// Interno
 import { MainLayout } from './layout/main-layout/main-layout';
 
 export const routes: Routes = [
@@ -9,19 +11,23 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
+        loadComponent: () =>
+          import('./dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'partners',
-        loadChildren: () => import('./partners/partners.routes').then((m) => m.PARTNERS_ROUTES),
+        loadChildren: () =>
+          import('./partners/partners.routes').then((m) => m.PARTNERS_ROUTES),
       },
       {
         path: 'projects',
-        loadChildren: () => import('./projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
+        loadChildren: () =>
+          import('./projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
       },
       {
         path: 'time-entries',
-        loadChildren: () => import('./time-entries/time-entries.routes').then((m) => m.TIME_ENTRIES_ROUTES),
+        loadChildren: () =>
+          import('./time-entries/time-entries.routes').then((m) => m.TIME_ENTRIES_ROUTES),
       },
     ],
   },

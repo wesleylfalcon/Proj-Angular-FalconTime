@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectList } from './project-list';
@@ -9,11 +10,11 @@ describe('ProjectList', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectList],
+      providers: [provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProjectList);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {

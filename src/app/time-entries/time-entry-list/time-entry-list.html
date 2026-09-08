@@ -1,8 +1,8 @@
-<section class="time-entry-list">
-  <div class="header">
+<section class="app-page time-entry-list">
+  <div class="app-page__header">
     <div>
       <h1>Apontamentos</h1>
-      <p>Gerencie os períodos e horas trabalhadas nos projetos.</p>
+      <p>Registro e acompanhamento das horas trabalhadas.</p>
     </div>
 
     <button mat-flat-button type="button" (click)="openCreateDialog()">
@@ -11,83 +11,162 @@
     </button>
   </div>
 
-  <table mat-table [dataSource]="(timeEntries$ | async) ?? []">
-    <ng-container matColumnDef="startDate">
-      <th mat-header-cell *matHeaderCellDef>Início</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.startDate }}
-      </td>
-    </ng-container>
+  <form class="app-filters" [formGroup]="filterForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Parceiro</mat-label>
+      <mat-select formControlName="partnerId">
+        <mat-option value="">Todos</mat-option>
 
-    <ng-container matColumnDef="endDate">
-      <th mat-header-cell *matHeaderCellDef>Fim</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.endDate ?? '—' }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="partner">
-      <th mat-header-cell *matHeaderCellDef>Parceiro</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.partnerName }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="project">
-      <th mat-header-cell *matHeaderCellDef>Projeto</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.projectName }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="hours">
-      <th mat-header-cell *matHeaderCellDef>Horas</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.hours }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="totalValue">
-      <th mat-header-cell *matHeaderCellDef>Valor total</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        {{ timeEntry.totalValue | currency: 'BRL' }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        @switch (timeEntry.status) {
-          @case ('PENDING') {
-            Pendente
-          }
-          @case ('BILLED') {
-            Faturado
-          }
-          @case ('PAID') {
-            Pago
-          }
-          @case ('CANCELLED') {
-            Cancelado
-          }
+        @for (partner of partners$ | async; track partner.id) {
+          <mat-option [value]="partner.id">{{ partner.name }}</mat-option>
         }
-      </td>
-    </ng-container>
+      </mat-select>
+    </mat-form-field>
 
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Ações</th>
-      <td mat-cell *matCellDef="let timeEntry">
-        <button mat-icon-button type="button" aria-label="Editar apontamento" (click)="openEditDialog(timeEntry)">
-          <mat-icon>edit</mat-icon>
-        </button>
+    <mat-form-field appearance="outline">
+      <mat-label>Projeto</mat-label>
+      <mat-select formControlName="projectId">
+        <mat-option value="">Todos</mat-option>
 
-        <button mat-icon-button type="button" aria-label="Excluir apontamento" (click)="deleteTimeEntry(timeEntry)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
+        @for (project of filteredProjects$ | async; track project.id) {
+          <mat-option [value]="project.id">{{ project.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+    <mat-form-field appearance="outline">
+      <mat-label>Data início</mat-label>
+      <input matInput type="date" formControlName="startDate" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Data fim</mat-label>
+      <input matInput type="date" formControlName="endDate" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="">Todos</mat-option>
+        <mat-option value="PENDING">Pendente</mat-option>
+        <mat-option value="BILLED">Faturado</mat-option>
+        <mat-option value="PAID">Pago</mat-option>
+        <mat-option value="CANCELLED">Cancelado</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="clearFilters()">
+      <mat-icon>filter_alt_off</mat-icon>
+      Limpar filtros
+    </button>
+  </form>
+
+  @if (summary$ | async; as summary) {
+    <div class="app-summary">
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Apontamentos</span>
+        <strong class="app-summary-card__value">{{ summary.entries }}</strong>
+      </div>
+
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Horas</span>
+        <strong class="app-summary-card__value">{{ summary.hours }}</strong>
+      </div>
+
+      <div class="app-summary-card">
+        <span class="app-summary-card__label">Valor total</span>
+        <strong class="app-summary-card__value">
+          {{ summary.totalValue | currency: 'BRL' }}
+        </strong>
+      </div>
+    </div>
+  }
+
+  @if (timeEntries$ | async; as timeEntries) {
+    @if (timeEntries.length) {
+      <div class="app-table-wrapper">
+        <table mat-table [dataSource]="timeEntries" class="app-table time-entry-list__table">
+          <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef>Início</th>
+            <td mat-cell *matCellDef="let timeEntry">
+              {{ timeEntry.startDate | date: 'dd/MM/yyyy':'UTC' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef>Fim</th>
+            <td mat-cell *matCellDef="let timeEntry">
+              @if (timeEntry.endDate) {
+                {{ timeEntry.endDate | date: 'dd/MM/yyyy':'UTC' }}
+              } @else {
+                —
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="partner">
+            <th mat-header-cell *matHeaderCellDef>Parceiro</th>
+            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.partnerName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="project">
+            <th mat-header-cell *matHeaderCellDef>Projeto</th>
+            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.projectName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="hours">
+            <th mat-header-cell *matHeaderCellDef>Horas</th>
+            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.hours }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalValue">
+            <th mat-header-cell *matHeaderCellDef>Valor total</th>
+            <td mat-cell *matCellDef="let timeEntry">
+              {{ timeEntry.totalValue | currency: 'BRL' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let timeEntry">
+              @switch (timeEntry.status) {
+                @case ('PENDING') { Pendente }
+                @case ('BILLED') { Faturado }
+                @case ('PAID') { Pago }
+                @case ('CANCELLED') { Cancelado }
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let timeEntry">
+              <button
+                mat-icon-button
+                type="button"
+                aria-label="Editar apontamento"
+                (click)="openEditDialog(timeEntry)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                type="button"
+                aria-label="Excluir apontamento"
+                (click)="deleteTimeEntry(timeEntry)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    } @else {
+      <div class="app-empty-state">Nenhum apontamento encontrado para os filtros informados.</div>
+    }
+  }
 </section>

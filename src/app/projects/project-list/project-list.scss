@@ -1,21 +1,15 @@
-.project-list {
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+.project-list__table {
+  min-width: 900px;
+}
 
-    h1 {
-      margin: 0;
-    }
+.mat-column-hourlyRate,
+.mat-column-estimatedHours,
+.mat-column-status,
+.mat-column-actions {
+  white-space: nowrap;
+}
 
-    p {
-      margin: 0.25rem 0 0;
-    }
-  }
-
-  &__table {
-    width: 100%;
-  }
+.mat-column-actions {
+  width: 110px;
+  text-align: center;
 }

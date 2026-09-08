@@ -43,6 +43,18 @@
       "status": "PLANNED",
       "description": "Projeto inicial para validação.",
       "createdAt": "2026-08-26T00:00:00.000Z"
+    },
+    {
+      "name": "Projeto dois",
+      "partnerId": "ky17yGwHjnI",
+      "billingType": "HOURLY",
+      "hourlyRate": 50,
+      "estimatedHours": 100,
+      "startDate": "2026-09-01",
+      "status": "IN_PROGRESS",
+      "description": "",
+      "createdAt": "2026-09-08T22:19:32.728Z",
+      "id": "M_J-KwvYHLw"
     }
   ],
   "timeEntries": [
@@ -58,6 +70,34 @@
       "totalValue": 900,
       "status": "PENDING",
       "createdAt": "2026-08-25T10:00:00.000Z"
+    },
+    {
+      "projectId": "1",
+      "partnerId": "1",
+      "startDate": "2026-08-01",
+      "endDate": "2026-08-10",
+      "hours": 20,
+      "description": "teste",
+      "hourlyRate": 75,
+      "totalValue": 1500,
+      "status": "PENDING",
+      "createdAt": "2026-09-08T22:18:19.646Z",
+      "id": "2uF3WqlgpJg"
+    },
+    {
+      "projectId": "M_J-KwvYHLw",
+      "partnerId": "ky17yGwHjnI",
+      "startDate": "2026-09-01",
+      "endDate": "2026-10-01",
+      "hours": 50,
+      "description": "teste 2",
+      "hourlyRate": 50,
+      "totalValue": 2500,
+      "status": "PENDING",
+      "createdAt": "2026-09-08T22:18:43.393Z",
+      "id": "6l7Gfw4tOcQ",
+      "projectName": "Projeto Teste",
+      "partnerName": "Parceiro Teste"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

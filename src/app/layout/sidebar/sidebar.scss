@@ -2,19 +2,28 @@
   width: 14rem;
   min-height: calc(100vh - 64px);
   padding: 0.5rem;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--mat-sys-outline-variant);
 
   mat-nav-list {
     padding-top: 0;
   }
 
   a {
-    border-radius: 0.5rem;
     margin-bottom: 0.25rem;
+    border-radius: 0.5rem;
   }
 
   &__item--active {
+    background: var(--mat-sys-secondary-container);
     font-weight: 600;
-    background: rgba(0, 0, 0, 0.06);
+  }
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 }

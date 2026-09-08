@@ -1,35 +1,35 @@
-//Common
-import { AsyncPipe } from '@angular/common';
+// Common
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 
-//Core
+// Core
 import { Component, inject } from '@angular/core';
 
-//Material
+// Material
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
 
-//RXJS
+// RxJS
 import { BehaviorSubject, combineLatest, map, switchMap } from 'rxjs';
 
-//Interno
-import { ProjectService } from '../project.service';
+// Interno
 import { PartnerService } from '../../partners/partner.service';
+import { ConfirmDialog } from '../../shared/ui/confirm-dialog/confirm-dialog';
 import { ProjectForm } from '../project-form/project-form';
 import { Project } from '../project.model';
-import { ConfirmDialog } from '../../shared/ui/confirm-dialog/confirm-dialog';
+import { ProjectService } from '../project.service';
 
 @Component({
   selector: 'app-project-list',
-  imports: [AsyncPipe, MatButtonModule, MatIconModule, MatTableModule],
+  imports: [AsyncPipe, CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss',
 })
 export class ProjectList {
-  private readonly projectService = inject(ProjectService); // Obtém a instância do ProjectService.
-  private readonly partnerService = inject(PartnerService); // Obtém a instância do PartnerService.
-  private readonly dialog = inject(MatDialog); // Obtém o serviço responsável por abrir dialogs.
+  private readonly projectService = inject(ProjectService);
+  private readonly partnerService = inject(PartnerService);
+  private readonly dialog = inject(MatDialog);
 
   readonly displayedColumns = [
     'name',
@@ -41,15 +41,9 @@ export class ProjectList {
     'actions',
   ];
 
-  /**
-   * BehaviorSubject usado como gatilho para recarregar a lista de projetos.
-   */
   private readonly refreshProjects$ = new BehaviorSubject<void>(undefined);
 
-  /**
-   * Sempre que refreshProjects$ emitir, busca novamente os projetos.
-   * Depois combina projetos e parceiros para exibir o nome do parceiro na tabela.
-   */
+  /** Combina projetos e parceiros para exibir o nome do parceiro na tabela. */
   readonly projects$ = combineLatest([
     this.refreshProjects$.pipe(switchMap(() => this.projectService.getProjects())),
     this.partnerService.getPartners(),
@@ -64,34 +58,26 @@ export class ProjectList {
     ),
   );
 
-  /**
-   * Abre o formulário de cadastro e atualiza a listagem após salvar.
-   */
+  /** Solicita uma nova consulta dos projetos cadastrados. */
+  loadProjects(): void {
+    this.refreshProjects$.next();
+  }
+
+  /** Abre o formulário para cadastro de projeto. */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(ProjectForm, {
       width: '760px',
       maxWidth: '95vw',
     });
 
-    dialogRef.afterClosed().subscribe({
-      next: (created) => {
-        if (created) {
-          this.loadProjects();
-        }
-      },
+    dialogRef.afterClosed().subscribe((created) => {
+      if (created) {
+        this.loadProjects();
+      }
     });
   }
 
-  /**
-   * Solicita uma nova consulta dos projetos cadastrados.
-   */
-  loadProjects(): void {
-    this.refreshProjects$.next();
-  }
-
-  /**
-   * Abre o formulário preenchido com os dados do projeto selecionado.
-   */
+  /** Abre o formulário preenchido com o projeto selecionado. */
   openEditDialog(project: Project): void {
     const dialogRef = this.dialog.open(ProjectForm, {
       width: '760px',
@@ -99,18 +85,14 @@ export class ProjectList {
       data: project,
     });
 
-    dialogRef.afterClosed().subscribe({
-      next: (updated) => {
-        if (updated) {
-          this.loadProjects();
-        }
-      },
+    dialogRef.afterClosed().subscribe((updated) => {
+      if (updated) {
+        this.loadProjects();
+      }
     });
   }
 
-  /**
-   * Solicita confirmação antes de excluir o projeto selecionado.
-   */
+  /** Confirma e exclui o projeto selecionado. */
   deleteProject(project: Project): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
@@ -120,18 +102,14 @@ export class ProjectList {
       },
     });
 
-    dialogRef.afterClosed().subscribe({
-      next: (confirmed) => {
-        if (!confirmed) {
-          return;
-        }
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
 
-        this.projectService.deleteProject(project.id).subscribe({
-          next: () => {
-            this.loadProjects();
-          },
-        });
-      },
+      this.projectService.deleteProject(project.id).subscribe(() => {
+        this.loadProjects();
+      });
     });
   }
 }
