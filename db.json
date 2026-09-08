@@ -31,5 +31,19 @@
       "id": "3HaU0Aps31M"
     }
   ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "Projeto Teste",
+      "partnerId": "1",
+      "billingType": "CLOSED_SCOPE",
+      "hourlyRate": 75,
+      "estimatedHours": 60,
+      "startDate": "2026-08-26",
+      "status": "PLANNED",
+      "description": "Projeto inicial para validação.",
+      "createdAt": "2026-08-26T00:00:00.000Z"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

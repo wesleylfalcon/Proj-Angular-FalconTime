@@ -15,6 +15,10 @@ export const routes: Routes = [
         path: 'partners',
         loadChildren: () => import('./partners/partners.routes').then((m) => m.PARTNERS_ROUTES),
       },
+      {
+        path: 'projects',
+        loadChildren: () => import('./projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
+      },
     ],
   },
 ];
