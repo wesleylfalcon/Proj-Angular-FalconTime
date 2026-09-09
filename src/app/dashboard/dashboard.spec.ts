@@ -1,4 +1,3 @@
-import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
@@ -11,7 +10,7 @@ describe('Dashboard', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Dashboard],
-      providers: [provideHttpClient(), provideCharts(withDefaultRegisterables())],
+      providers: [provideCharts(withDefaultRegisterables())],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Dashboard);

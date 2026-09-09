@@ -1,0 +1,31 @@
+<section class="login-page">
+  <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="header">
+      <h1>Falcon Time</h1>
+
+      <p>Acesse sua conta para continuar.</p>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>E-mail</mat-label>
+
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Senha</mat-label>
+
+      <input matInput type="password" formControlName="password" />
+    </mat-form-field>
+
+    @if (errorMessage) {
+      <p class="error">
+        {{ errorMessage }}
+      </p>
+    }
+
+    <button mat-flat-button type="submit" [disabled]="loading">
+      {{ loading ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+</section>

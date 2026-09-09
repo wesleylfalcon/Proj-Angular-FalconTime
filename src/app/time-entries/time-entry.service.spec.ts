@@ -1,4 +1,3 @@
-import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 
 import { TimeEntryService } from './time-entry.service';
@@ -8,7 +7,7 @@ describe('TimeEntryService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient()],
+      providers: [],
     });
 
     service = TestBed.inject(TimeEntryService);

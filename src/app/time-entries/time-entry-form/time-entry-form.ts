@@ -157,7 +157,6 @@ export class TimeEntryForm {
       .createTimeEntry({
         ...formValue,
         endDate: normalizedEndDate,
-        createdAt: new Date().toISOString(),
       })
       .subscribe(() => this.dialogRef.close(true));
   }

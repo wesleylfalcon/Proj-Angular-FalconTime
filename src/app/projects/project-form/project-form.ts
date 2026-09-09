@@ -121,7 +121,6 @@ export class ProjectForm {
     this.projectService
       .createProject({
         ...formValue,
-        createdAt: new Date().toISOString(),
       })
       .subscribe(() => this.dialogRef.close(true));
   }

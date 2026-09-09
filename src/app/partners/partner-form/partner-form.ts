@@ -73,7 +73,6 @@ export class PartnerForm {
     this.partnerService
       .createPartner({
         ...formValue,
-        createdAt: new Date().toISOString(),
       })
       .subscribe(() => this.dialogRef.close(true));
   }

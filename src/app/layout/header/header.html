@@ -10,6 +10,12 @@
   <div class="header__user">
     <mat-icon>account_circle</mat-icon>
 
-    <span>Wesley Falcon</span>
+    @if (userEmail$ | async; as userEmail) {
+      <span>{{ userEmail }}</span>
+    }
+
+    <button mat-icon-button type="button" matTooltip="Sair" aria-label="Sair" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
   </div>
 </mat-toolbar>

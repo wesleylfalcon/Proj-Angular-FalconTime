@@ -1,9 +1,6 @@
 // Core
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 
-// HTTP
-import { provideHttpClient } from '@angular/common/http';
-
 // Router
 import { provideRouter } from '@angular/router';
 
@@ -17,7 +14,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(),
     provideCharts(withDefaultRegisterables()),
   ],
 };

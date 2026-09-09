@@ -1,0 +1,51 @@
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    .login-card {
+        width: 100%;
+        max-width: 420px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        padding: 32px;
+
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+
+        .header {
+            margin-bottom: 8px;
+
+            h1 {
+                margin: 0;
+                font-size: 28px;
+            }
+
+            p {
+                margin: 6px 0 0;
+                opacity: 0.7;
+            }
+        }
+
+        mat-form-field {
+            width: 100%;
+        }
+
+        .error {
+            margin: 0;
+            font-size: 14px;
+            color: #b3261e;
+        }
+
+        button {
+            height: 48px;
+        }
+    }
+}

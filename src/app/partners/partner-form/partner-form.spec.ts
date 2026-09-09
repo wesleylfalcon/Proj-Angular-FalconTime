@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef
@@ -15,8 +14,6 @@ describe('PartnerForm', () => {
     await TestBed.configureTestingModule({
       imports: [PartnerForm],
       providers: [
-        provideHttpClient(),
-
         // Simula o MatDialogRef fornecido pelo Angular Material ao abrir o dialog.
         {
           provide: MatDialogRef,
