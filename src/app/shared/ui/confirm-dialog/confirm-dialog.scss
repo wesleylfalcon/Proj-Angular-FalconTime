@@ -1,0 +1,16 @@
+
+
+/* Tipografia padronizada do diálogo de confirmação. */
+:host {
+  font-family: var(--falcon-font-family);
+}
+
+h2[mat-dialog-title] {
+  font-size: var(--falcon-font-xl);
+  font-weight: var(--falcon-font-bold);
+}
+
+mat-dialog-content {
+  font-size: var(--falcon-font-base);
+  font-weight: var(--falcon-font-regular);
+}

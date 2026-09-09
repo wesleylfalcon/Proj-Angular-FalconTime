@@ -13,14 +13,18 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
 
 // RxJS
-import { map, shareReplay } from 'rxjs';
+import { map, shareReplay, take } from 'rxjs';
 
 // Interno
 import { PartnerService } from '../../partners/partner.service';
 import { Project, ProjectBillingType, ProjectStatus } from '../project.model';
 import { ProjectService } from '../project.service';
+import { dateToIsoDate, isoDateToDate } from '../../shared/utils/date.utils';
+import { decimalHoursToTime, isValidTime, timeToDecimalHours } from '../../shared/utils/time.utils';
 
 @Component({
   selector: 'app-project-form',
@@ -32,6 +36,8 @@ import { ProjectService } from '../project.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
+    MatIconModule,
   ],
   templateUrl: './project-form.html',
   styleUrl: './project-form.scss',
@@ -75,21 +81,25 @@ export class ProjectForm {
     partnerId: ['', Validators.required],
     billingType: ['CLOSED_SCOPE' as ProjectBillingType, Validators.required],
     hourlyRate: [0, [Validators.required, Validators.min(0.01)]],
-    estimatedHours: [0, [Validators.required, Validators.min(0.01)]],
-    startDate: ['', Validators.required],
+    estimatedHours: ['00:00', Validators.required],
+    startDate: [null as Date | null, Validators.required],
     status: ['PLANNED' as ProjectStatus, Validators.required],
     description: [''],
   });
 
   constructor() {
     if (this.data) {
-      this.form.patchValue(this.data);
+      this.form.patchValue({
+        ...this.data,
+        estimatedHours: decimalHoursToTime(this.data.estimatedHours),
+        startDate: isoDateToDate(this.data.startDate),
+      });
     }
   }
 
   /** Preenche o valor/hora padrão do parceiro selecionado. */
   fillPartnerHourlyRate(partnerId: string): void {
-    this.availablePartners$.subscribe((partners) => {
+    this.availablePartners$.pipe(take(1)).subscribe((partners) => {
       const partner = partners.find((item) => item.id === partnerId);
 
       if (partner) {
@@ -107,11 +117,27 @@ export class ProjectForm {
 
     const formValue = this.form.getRawValue();
 
+    if (!isValidTime(formValue.estimatedHours)) {
+      this.form.controls.estimatedHours.setErrors({
+        invalidTime: true,
+      });
+
+      return;
+    }
+
+    const normalizedValue = {
+      ...formValue,
+
+      estimatedHours: timeToDecimalHours(formValue.estimatedHours),
+
+      startDate: dateToIsoDate(formValue.startDate),
+    };
+
     if (this.data) {
       this.projectService
         .updateProject({
           ...this.data,
-          ...formValue,
+          ...normalizedValue,
         })
         .subscribe(() => this.dialogRef.close(true));
 
@@ -120,7 +146,7 @@ export class ProjectForm {
 
     this.projectService
       .createProject({
-        ...formValue,
+        ...normalizedValue,
       })
       .subscribe(() => this.dialogRef.close(true));
   }

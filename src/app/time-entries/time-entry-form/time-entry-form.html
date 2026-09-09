@@ -1,126 +1,247 @@
-<h2 mat-dialog-title>
-  {{ data ? 'Editar apontamento' : 'Novo apontamento' }}
-</h2>
+<div class="time-entry-form__header">
+  <div class="time-entry-form__header-icon">
+    <mat-icon> more_time </mat-icon>
+  </div>
 
-<mat-dialog-content>
-  <form
-    id="time-entry-form"
-    class="app-form-grid"
-    [formGroup]="form"
-    (ngSubmit)="save()"
-  >
-    <mat-form-field appearance="outline">
-      <mat-label>Projeto</mat-label>
+  <div>
+    <span> Apontamento </span>
 
-      <mat-select formControlName="projectId" (selectionChange)="fillProjectData($event.value)">
-        @for (project of projects$ | async; track project.id) {
-          <mat-option [value]="project.id">
-            {{ project.name }}
-          </mat-option>
+    <h2 mat-dialog-title>
+      {{ data ? 'Editar apontamento' : 'Novo apontamento' }}
+    </h2>
+
+    <p>
+      {{
+        data
+          ? 'Atualize as informações do lançamento de horas.'
+          : 'Registre suas horas e acompanhe o valor correspondente ao trabalho realizado.'
+      }}
+    </p>
+  </div>
+</div>
+
+<mat-dialog-content class="time-entry-form__content">
+  <form id="time-entry-form" class="time-entry-form" [formGroup]="form" (ngSubmit)="save()">
+    <!-- Projeto -->
+    <section class="time-entry-form__section">
+      <div class="time-entry-form__section-title">
+        <mat-icon> work_outline </mat-icon>
+
+        <div>
+          <strong> Projeto </strong>
+
+          <span> Selecione onde as horas foram trabalhadas. </span>
+        </div>
+      </div>
+
+      <div class="time-entry-form__grid">
+        <mat-form-field appearance="outline" class="time-entry-form__field--wide">
+          <mat-label> Projeto </mat-label>
+
+          <mat-icon matPrefix> folder_open </mat-icon>
+
+          <mat-select formControlName="projectId" (selectionChange)="fillProjectData($event.value)">
+            @for (project of projects$ | async; track project.id) {
+              <mat-option [value]="project.id">
+                {{ project.name }}
+              </mat-option>
+            }
+          </mat-select>
+
+          @if (form.controls.projectId.touched && form.controls.projectId.invalid) {
+            <mat-error> Informe o projeto. </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="time-entry-form__field--wide">
+          <mat-label> Parceiro </mat-label>
+
+          <mat-icon matPrefix> business </mat-icon>
+
+          <input
+            matInput
+            [value]="
+              (projects$ | async)?.find((project) => project.id === form.controls.projectId.value)
+                ?.partnerName ?? ''
+            "
+            readonly
+          />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- Período e horas -->
+    <section class="time-entry-form__section">
+      <div class="time-entry-form__section-title">
+        <mat-icon> schedule </mat-icon>
+
+        <div>
+          <strong> Período e horas </strong>
+
+          <span> Informe quando o trabalho foi realizado. </span>
+        </div>
+      </div>
+
+      <div class="time-entry-form__grid">
+        <mat-form-field appearance="outline">
+          <mat-label> Data de início </mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            formControlName="startDate"
+            placeholder="dd/mm/aaaa"
+          />
+
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+
+          <mat-datepicker #startPicker></mat-datepicker>
+
+          @if (form.controls.startDate.touched && form.controls.startDate.invalid) {
+            <mat-error> Informe a data de início. </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label> Data de fim </mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            formControlName="endDate"
+            placeholder="dd/mm/aaaa"
+          />
+
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+
+          <mat-datepicker #endPicker></mat-datepicker>
+
+          @if (form.controls.endDate.touched && form.controls.endDate.hasError('beforeStart')) {
+            <mat-error> A data fim não pode ser anterior à data início. </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label> Quantidade de horas </mat-label>
+
+          <mat-icon matPrefix> timer </mat-icon>
+
+          <input
+            matInput
+            type="text"
+            formControlName="hours"
+            placeholder="00:00"
+            autocomplete="off"
+            (input)="calculateTotalValue()"
+          />
+
+          <mat-hint> Ex.: 04:30 </mat-hint>
+
+          @if (form.controls.hours.touched && form.controls.hours.invalid) {
+            <mat-error> Informe as horas no formato HH:mm. </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label> Status </mat-label>
+
+          <mat-icon matPrefix> flag </mat-icon>
+
+          <mat-select formControlName="status">
+            @for (status of statuses; track status.value) {
+              <mat-option [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- Financeiro -->
+    <section class="time-entry-form__section">
+      <div class="time-entry-form__section-title">
+        <mat-icon> payments </mat-icon>
+
+        <div>
+          <strong> Financeiro </strong>
+
+          <span> Confira o valor/hora e o total do apontamento. </span>
+        </div>
+      </div>
+
+      <div class="time-entry-form__grid">
+        <mat-form-field appearance="outline">
+          <mat-label> Valor/hora </mat-label>
+
+          <span matTextPrefix> R$&nbsp; </span>
+
+          <input
+            matInput
+            type="number"
+            min="0.01"
+            step="0.01"
+            formControlName="hourlyRate"
+            (input)="calculateTotalValue()"
+          />
+
+          @if (form.controls.hourlyRate.touched && form.controls.hourlyRate.invalid) {
+            <mat-error> Informe um valor/hora válido. </mat-error>
+          }
+        </mat-form-field>
+
+        <div class="time-entry-form__total">
+          <div class="time-entry-form__total-icon">
+            <mat-icon> account_balance_wallet </mat-icon>
+          </div>
+
+          <div>
+            <span> Valor total </span>
+
+            <strong>
+              {{ form.controls.totalValue.value | currency: 'BRL' }}
+            </strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Atividade -->
+    <section class="time-entry-form__section">
+      <div class="time-entry-form__section-title">
+        <mat-icon> notes </mat-icon>
+
+        <div>
+          <strong> Atividade realizada </strong>
+
+          <span> Descreva resumidamente o trabalho executado. </span>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="time-entry-form__description">
+        <mat-label> Descrição da atividade </mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="description"
+          placeholder="Ex.: Desenvolvimento da tela de aprovação e ajustes na integração..."
+        ></textarea>
+
+        @if (form.controls.description.touched && form.controls.description.invalid) {
+          <mat-error> Informe a descrição da atividade. </mat-error>
         }
-      </mat-select>
-
-      @if (form.controls.projectId.touched && form.controls.projectId.invalid) {
-        <mat-error>Informe o projeto.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Parceiro</mat-label>
-
-      <input
-        matInput
-        [value]="
-          (projects$ | async)?.find((project) => project.id === form.controls.projectId.value)
-            ?.partnerName ?? ''
-        "
-        readonly
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Data início</mat-label>
-      <input matInput type="date" formControlName="startDate" />
-
-      @if (form.controls.startDate.touched && form.controls.startDate.invalid) {
-        <mat-error>Informe a data de início.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Data fim</mat-label>
-      <input matInput type="date" formControlName="endDate" />
-
-      @if (form.controls.endDate.touched && form.controls.endDate.hasError('beforeStart')) {
-        <mat-error>A data fim não pode ser anterior à data início.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Quantidade de horas</mat-label>
-      <input
-        matInput
-        type="number"
-        min="0.01"
-        step="0.25"
-        formControlName="hours"
-        (input)="calculateTotalValue()"
-      />
-
-      @if (form.controls.hours.touched && form.controls.hours.invalid) {
-        <mat-error>Informe uma quantidade de horas válida.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Valor/hora</mat-label>
-      <span matTextPrefix>R$&nbsp;</span>
-      <input
-        matInput
-        type="number"
-        min="0.01"
-        step="0.01"
-        formControlName="hourlyRate"
-        (input)="calculateTotalValue()"
-      />
-
-      @if (form.controls.hourlyRate.touched && form.controls.hourlyRate.invalid) {
-        <mat-error>Informe um valor/hora válido.</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Valor total</mat-label>
-      <input matInput [value]="form.controls.totalValue.value | currency: 'BRL'" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Status</mat-label>
-
-      <mat-select formControlName="status">
-        @for (status of statuses; track status.value) {
-          <mat-option [value]="status.value">
-            {{ status.label }}
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="app-form-grid__full">
-      <mat-label>Descrição da atividade</mat-label>
-      <textarea matInput rows="4" formControlName="description"></textarea>
-
-      @if (form.controls.description.touched && form.controls.description.invalid) {
-        <mat-error>Informe a descrição da atividade.</mat-error>
-      }
-    </mat-form-field>
+      </mat-form-field>
+    </section>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="time-entry-form__actions">
   <button mat-button type="button" mat-dialog-close>Cancelar</button>
 
   <button mat-flat-button type="submit" form="time-entry-form">
-    {{ data ? 'Salvar alterações' : 'Salvar' }}
+    <mat-icon> save </mat-icon>
+
+    {{ data ? 'Salvar alterações' : 'Salvar apontamento' }}
   </button>
 </mat-dialog-actions>

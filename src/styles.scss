@@ -3,32 +3,104 @@
 html {
   height: 100%;
 
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
+  @include mat.theme((color: (primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
       typography: Roboto,
       density: 0,
-    )
-  );
+    ));
+}
+
+:root {
+  --falcon-primary: #1769e0;
+  --falcon-primary-hover: #0f5bc9;
+  --falcon-primary-soft: #eaf3ff;
+  --falcon-primary-dark: #0b4fa8;
+
+  --falcon-sidebar: #101f33;
+  --falcon-sidebar-secondary: #152a43;
+
+  --falcon-background: #f4f7fb;
+  --falcon-surface: #ffffff;
+  --falcon-surface-soft: #f8fafc;
+
+  --falcon-text: #162033;
+  --falcon-text-secondary: #667085;
+
+  --falcon-border: #e4e9f0;
+
+  --falcon-success: #198754;
+  --falcon-warning: #c77b00;
+  --falcon-danger: #c62828;
+
+  --falcon-radius-sm: 0.625rem;
+  --falcon-radius-md: 0.875rem;
+  --falcon-radius-lg: 1rem;
+
+  --falcon-shadow-sm:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 1px 4px rgba(16, 24, 40, 0.06);
+
+  --falcon-shadow-md:
+    0 4px 14px rgba(16, 24, 40, 0.06);
+
+  --falcon-transition: 180ms ease;
+
+  /* Tipografia */
+  --falcon-font-family:
+    'Roboto',
+    Arial,
+    sans-serif;
+
+  --falcon-font-xs: 0.6875rem;   /* 11px */
+  --falcon-font-sm: 0.75rem;     /* 12px */
+  --falcon-font-md: 0.8125rem;   /* 13px */
+  --falcon-font-base: 0.875rem;  /* 14px */
+  --falcon-font-lg: 1rem;        /* 16px */
+  --falcon-font-xl: 1.25rem;     /* 20px */
+  --falcon-font-2xl: 1.75rem;    /* 28px */
+
+  --falcon-font-regular: 400;
+  --falcon-font-medium: 500;
+  --falcon-font-semibold: 600;
+  --falcon-font-bold: 700;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   min-height: 100%;
-  margin: 0;
-  color-scheme: light;
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
 }
 
-/* Estrutura padrão das páginas da aplicação. */
+body {
+  margin: 0;
+  color-scheme: light;
+  background: var(--falcon-background);
+  color: var(--falcon-text);
+  font-family: var(--falcon-font-family);
+  font-size: var(--falcon-font-base);
+  font-weight: var(--falcon-font-regular);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Estrutura padrão das páginas. */
 .app-page {
   display: flex;
   min-width: 0;
@@ -38,19 +110,24 @@ body {
 
 .app-page__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 
   h1 {
     margin: 0;
-    font-size: 1.75rem;
-    font-weight: 600;
+    color: var(--falcon-text);
+    font-size: var(--falcon-font-2xl);
+    font-weight: var(--falcon-font-bold);
+    letter-spacing: -0.03em;
   }
 
   p {
-    margin: 0.25rem 0 0;
-    opacity: 0.7;
+    margin: 0.35rem 0 0;
+    color: var(--falcon-text-secondary);
+    font-size: var(--falcon-font-base);
+    font-weight: var(--falcon-font-regular);
+    line-height: 1.45;
   }
 
   button {
@@ -58,12 +135,19 @@ body {
   }
 }
 
-/* Grid padrão para filtros. */
+/* Filtros */
 .app-filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1rem;
   align-items: start;
+  padding: 1rem;
+
+  border: 1px solid var(--falcon-border);
+  border-radius: var(--falcon-radius-md);
+
+  background: var(--falcon-surface);
+  box-shadow: var(--falcon-shadow-sm);
 
   mat-form-field {
     width: 100%;
@@ -75,68 +159,159 @@ body {
   }
 }
 
-/* Indicadores reutilizados em Apontamentos e Dashboard. */
+/* Cards */
 .app-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit,
+      minmax(200px, 1fr));
   gap: 1rem;
 }
 
-.app-summary-card,
-.app-panel {
-  border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 0.75rem;
-  background: var(--mat-sys-surface-container-lowest);
-}
-
 .app-summary-card {
+  position: relative;
+
   display: flex;
+  min-height: 116px;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
+  justify-content: center;
+  gap: 0.4rem;
+
+  padding: 1.25rem;
+
+  overflow: hidden;
+
+  border: 1px solid var(--falcon-border);
+  border-radius: var(--falcon-radius-md);
+
+  background: var(--falcon-surface);
+  box-shadow: var(--falcon-shadow-sm);
+
+  transition:
+    transform var(--falcon-transition),
+    box-shadow var(--falcon-transition);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--falcon-shadow-md);
+  }
+
+  &::after {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+    background: var(--falcon-primary-soft);
+
+    content: '';
+  }
 }
 
 .app-summary-card__label {
-  font-size: 0.875rem;
-  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+
+  color: var(--falcon-text-secondary);
+  font-size: var(--falcon-font-base);
 }
 
 .app-summary-card__value {
-  font-size: 1.5rem;
-  font-weight: 600;
+  position: relative;
+  z-index: 1;
+
+  color: var(--falcon-text);
+  font-size: 1.65rem;
+  font-weight: var(--falcon-font-bold);
 }
 
-/* Tabelas ficam roláveis em telas menores sem quebrar o layout. */
+/* Painéis */
+.app-panel {
+  padding: 1.25rem;
+
+  border: 1px solid var(--falcon-border);
+  border-radius: var(--falcon-radius-md);
+
+  background: var(--falcon-surface);
+  box-shadow: var(--falcon-shadow-sm);
+}
+
+/* Tabelas */
 .app-table-wrapper {
   width: 100%;
   overflow-x: auto;
+
+  border: 1px solid var(--falcon-border);
+  border-radius: var(--falcon-radius-md);
+
+  background: var(--falcon-surface);
+  box-shadow: var(--falcon-shadow-sm);
 }
 
 .app-table {
   width: 100%;
+  background: transparent;
 
   th {
-    font-weight: 600;
+    height: 52px;
+
+    color: var(--falcon-text-secondary);
+    font-family: var(--falcon-font-family);
+    font-size: var(--falcon-font-sm);
+    font-weight: var(--falcon-font-semibold);
+    line-height: 1.2;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+
+    background: var(--falcon-surface-soft);
+  }
+
+  td {
+    height: 58px;
+
+    color: var(--falcon-text);
+    font-family: var(--falcon-font-family);
+    font-size: var(--falcon-font-md);
+    font-weight: var(--falcon-font-regular);
+    line-height: 1.35;
   }
 
   td,
   th {
+    border-bottom-color: var(--falcon-border);
     vertical-align: middle;
+  }
+
+  tr.mat-mdc-row {
+    transition: background var(--falcon-transition);
+
+    &:hover {
+      background: #f8fbff;
+    }
   }
 }
 
 .app-empty-state {
-  padding: 2rem 1rem;
+  padding: 3rem 1rem;
+
+  border: 1px dashed var(--falcon-border);
+  border-radius: var(--falcon-radius-md);
+
+  color: var(--falcon-text-secondary);
   text-align: center;
-  opacity: 0.65;
+
+  background: var(--falcon-surface);
 }
 
-/* Grid padrão dos formulários exibidos em dialogs. */
+/* Forms */
 .app-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
 
   mat-form-field {
     width: 100%;
@@ -147,9 +322,116 @@ body {
   grid-column: 1 / -1;
 }
 
+/* Material */
+/* Tipografia padrão dos botões */
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-raised-button {
+  font-family: var(--falcon-font-family) !important;
+  font-size: var(--falcon-font-md) !important;
+  font-weight: var(--falcon-font-semibold) !important;
+  letter-spacing: 0 !important;
+}
+
+/* Tipografia padrão dos campos */
+.mat-mdc-form-field {
+  font-family: var(--falcon-font-family);
+}
+
+.mat-mdc-input-element,
+.mat-mdc-select-value,
+.mat-mdc-option {
+  font-family: var(--falcon-font-family) !important;
+  font-size: var(--falcon-font-base) !important;
+}
+
+.mat-mdc-floating-label {
+  font-family: var(--falcon-font-family) !important;
+  font-size: var(--falcon-font-base) !important;
+}
+
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-error {
+  font-family: var(--falcon-font-family) !important;
+  font-size: var(--falcon-font-xs) !important;
+}
+
+.mat-mdc-dialog-surface {
+  border-radius: 1rem !important;
+}
+
+.mat-mdc-unelevated-button {
+  border-radius: 0.625rem !important;
+}
+
+.mat-mdc-outlined-button {
+  border-radius: 0.625rem !important;
+}
+
+.mat-mdc-icon-button {
+  transition:
+    background var(--falcon-transition),
+    transform var(--falcon-transition);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.mat-mdc-menu-panel.header-account-menu {
+  min-width: 280px !important;
+  max-width: 320px !important;
+
+  overflow: hidden !important;
+
+  border:
+    1px solid var(--falcon-border);
+
+  border-radius:
+    14px !important;
+
+  background:
+    var(--falcon-surface);
+
+  box-shadow:
+    0 14px 36px rgba(15, 31, 53, 0.14) !important;
+
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+  }
+
+  .mat-mdc-menu-item {
+    min-height: 48px;
+
+    padding:
+      0 1rem;
+
+    color:
+      var(--falcon-text);
+
+    font-family: var(--falcon-font-family);
+    font-size: var(--falcon-font-md);
+    font-weight: var(--falcon-font-medium);
+    letter-spacing: 0;
+
+    mat-icon {
+      margin-right:
+        0.75rem;
+
+      color:
+        var(--falcon-text-secondary);
+    }
+
+    &:hover {
+      background:
+        #f5f8fc;
+    }
+  }
+}
+
 @media (max-width: 700px) {
   .app-page__header {
-    align-items: flex-start;
     flex-direction: column;
   }
 

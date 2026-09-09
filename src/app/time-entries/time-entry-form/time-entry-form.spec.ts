@@ -1,14 +1,9 @@
 // Testing
-import {
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 // Material
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 // RxJS
 import { of } from 'rxjs';
@@ -25,14 +20,15 @@ describe('TimeEntryForm', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        TimeEntryForm,
-      ],
+      imports: [TimeEntryForm],
       providers: [
+        provideNativeDateAdapter(),
+
         {
           provide: MAT_DIALOG_DATA,
           useValue: null,
         },
+
         {
           provide: MatDialogRef,
           useValue: {
@@ -40,28 +36,11 @@ describe('TimeEntryForm', () => {
           },
         },
 
-        // Evita chamadas HTTP reais durante o teste unitário.
-        {
-          provide: ProjectService,
-          useValue: {
-            getProjects: () => of([]),
-          },
-        },
-        {
-          provide: PartnerService,
-          useValue: {
-            getPartners: () => of([]),
-          },
-        },
-        {
-          provide: TimeEntryService,
-          useValue: {},
-        },
+        // ...restante que já existe
       ],
     }).compileComponents();
 
-    fixture =
-      TestBed.createComponent(TimeEntryForm);
+    fixture = TestBed.createComponent(TimeEntryForm);
 
     component = fixture.componentInstance;
 

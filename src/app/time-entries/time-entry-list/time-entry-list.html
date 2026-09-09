@@ -1,172 +1,315 @@
 <section class="app-page time-entry-list">
-  <div class="app-page__header">
+  <header class="time-entry-list__header">
     <div>
-      <h1>Apontamentos</h1>
-      <p>Registro e acompanhamento das horas trabalhadas.</p>
+      <span class="time-entry-list__eyebrow"> Apontamentos </span>
+
+      <h1>Meus apontamentos</h1>
+
+      <p>Registre suas horas, acompanhe valores e controle o status de cada lançamento.</p>
     </div>
 
-    <button mat-flat-button type="button" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+    <button
+      mat-flat-button
+      type="button"
+      class="time-entry-list__new-button"
+      (click)="openCreateDialog()"
+    >
+      <mat-icon> add </mat-icon>
+
       Novo apontamento
     </button>
-  </div>
+  </header>
 
-  <form class="app-filters" [formGroup]="filterForm">
-    <mat-form-field appearance="outline">
-      <mat-label>Parceiro</mat-label>
+  <form class="time-entry-list__filters" [formGroup]="filterForm">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label> Parceiro </mat-label>
+
       <mat-select formControlName="partnerId">
-        <mat-option value="">Todos</mat-option>
+        <mat-option value=""> Todos </mat-option>
 
         @for (partner of partners$ | async; track partner.id) {
-          <mat-option [value]="partner.id">{{ partner.name }}</mat-option>
+          <mat-option [value]="partner.id">
+            {{ partner.name }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Projeto</mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label> Projeto </mat-label>
+
       <mat-select formControlName="projectId">
-        <mat-option value="">Todos</mat-option>
+        <mat-option value=""> Todos </mat-option>
 
         @for (project of filteredProjects$ | async; track project.id) {
-          <mat-option [value]="project.id">{{ project.name }}</mat-option>
+          <mat-option [value]="project.id">
+            {{ project.name }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Data início</mat-label>
-      <input matInput type="date" formControlName="startDate" />
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label> Data inicial </mat-label>
+
+      <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+
+      <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+
+      <mat-datepicker #startPicker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Data fim</mat-label>
-      <input matInput type="date" formControlName="endDate" />
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label> Data final </mat-label>
+
+      <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+
+      <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+
+      <mat-datepicker #endPicker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Status</mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label> Status </mat-label>
+
       <mat-select formControlName="status">
-        <mat-option value="">Todos</mat-option>
-        <mat-option value="PENDING">Pendente</mat-option>
-        <mat-option value="BILLED">Faturado</mat-option>
-        <mat-option value="PAID">Pago</mat-option>
-        <mat-option value="CANCELLED">Cancelado</mat-option>
+        <mat-option value=""> Todos </mat-option>
+
+        <mat-option value="PENDING"> Pendente </mat-option>
+
+        <mat-option value="BILLED"> Faturado </mat-option>
+
+        <mat-option value="PAID"> Pago </mat-option>
+
+        <mat-option value="CANCELLED"> Cancelado </mat-option>
       </mat-select>
     </mat-form-field>
 
-    <button mat-stroked-button type="button" (click)="clearFilters()">
-      <mat-icon>filter_alt_off</mat-icon>
-      Limpar filtros
+    <button
+      mat-stroked-button
+      type="button"
+      class="time-entry-list__clear"
+      (click)="clearFilters()"
+    >
+      <mat-icon> filter_alt_off </mat-icon>
+
+      Limpar
     </button>
   </form>
 
   @if (summary$ | async; as summary) {
-    <div class="app-summary">
-      <div class="app-summary-card">
-        <span class="app-summary-card__label">Apontamentos</span>
-        <strong class="app-summary-card__value">{{ summary.entries }}</strong>
-      </div>
+    <section class="time-entry-list__summary">
+      <article class="time-entry-list__summary-card">
+        <div class="time-entry-list__summary-icon time-entry-list__summary-icon--blue">
+          <mat-icon> receipt_long </mat-icon>
+        </div>
 
-      <div class="app-summary-card">
-        <span class="app-summary-card__label">Horas</span>
-        <strong class="app-summary-card__value">{{ summary.hours }}</strong>
-      </div>
+        <div>
+          <span> Apontamentos </span>
 
-      <div class="app-summary-card">
-        <span class="app-summary-card__label">Valor total</span>
-        <strong class="app-summary-card__value">
-          {{ summary.totalValue | currency: 'BRL' }}
-        </strong>
-      </div>
-    </div>
+          <strong>
+            {{ summary.entries }}
+          </strong>
+        </div>
+      </article>
+
+      <article class="time-entry-list__summary-card">
+        <div class="time-entry-list__summary-icon time-entry-list__summary-icon--purple">
+          <mat-icon> schedule </mat-icon>
+        </div>
+
+        <div>
+          <span> Horas </span>
+
+          <strong>
+            {{ summary.hours | duration }}
+          </strong>
+        </div>
+      </article>
+
+      <article class="time-entry-list__summary-card">
+        <div class="time-entry-list__summary-icon time-entry-list__summary-icon--green">
+          <mat-icon> payments </mat-icon>
+        </div>
+
+        <div>
+          <span> Valor total </span>
+
+          <strong>
+            {{ summary.totalValue | currency: 'BRL' }}
+          </strong>
+        </div>
+      </article>
+    </section>
   }
 
   @if (timeEntries$ | async; as timeEntries) {
     @if (timeEntries.length) {
-      <div class="app-table-wrapper">
+      <div class="app-table-wrapper time-entry-list__table-wrapper">
         <table mat-table [dataSource]="timeEntries" class="app-table time-entry-list__table">
-          <ng-container matColumnDef="startDate">
-            <th mat-header-cell *matHeaderCellDef>Início</th>
-            <td mat-cell *matCellDef="let timeEntry">
-              {{ timeEntry.startDate | date: 'dd/MM/yyyy':'UTC' }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="endDate">
-            <th mat-header-cell *matHeaderCellDef>Fim</th>
-            <td mat-cell *matCellDef="let timeEntry">
-              @if (timeEntry.endDate) {
-                {{ timeEntry.endDate | date: 'dd/MM/yyyy':'UTC' }}
-              } @else {
-                —
-              }
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="partner">
-            <th mat-header-cell *matHeaderCellDef>Parceiro</th>
-            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.partnerName }}</td>
-          </ng-container>
-
+          <!-- Projeto -->
           <ng-container matColumnDef="project">
             <th mat-header-cell *matHeaderCellDef>Projeto</th>
-            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.projectName }}</td>
+
+            <td mat-cell *matCellDef="let entry">
+              <div class="time-entry-list__project">
+                <div class="time-entry-list__project-icon">
+                  <mat-icon> work_outline </mat-icon>
+                </div>
+
+                <div>
+                  <strong>
+                    {{ entry.projectName }}
+                  </strong>
+
+                  <span>
+                    {{ entry.partnerName }}
+                  </span>
+                </div>
+              </div>
+            </td>
           </ng-container>
 
+          <!-- Período -->
+          <ng-container matColumnDef="period">
+            <th mat-header-cell *matHeaderCellDef>Período</th>
+
+            <td mat-cell *matCellDef="let entry">
+              <div class="time-entry-list__period">
+                <strong>
+                  {{ entry.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+                </strong>
+
+                <span>
+                  @if (entry.endDate) {
+                    até
+                    {{ entry.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+                  } @else {
+                    Data única
+                  }
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Horas -->
           <ng-container matColumnDef="hours">
             <th mat-header-cell *matHeaderCellDef>Horas</th>
-            <td mat-cell *matCellDef="let timeEntry">{{ timeEntry.hours }}</td>
-          </ng-container>
 
-          <ng-container matColumnDef="totalValue">
-            <th mat-header-cell *matHeaderCellDef>Valor total</th>
-            <td mat-cell *matCellDef="let timeEntry">
-              {{ timeEntry.totalValue | currency: 'BRL' }}
+            <td mat-cell *matCellDef="let entry">
+              <strong class="time-entry-list__hours">
+                {{ entry.hours | duration }}
+              </strong>
             </td>
           </ng-container>
 
+          <!-- Valor hora -->
+          <ng-container matColumnDef="hourlyRate">
+            <th mat-header-cell *matHeaderCellDef>Valor/hora</th>
+
+            <td mat-cell *matCellDef="let entry">
+              {{ entry.hourlyRate | currency: 'BRL' }}
+            </td>
+          </ng-container>
+
+          <!-- Valor total -->
+          <ng-container matColumnDef="totalValue">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+
+            <td mat-cell *matCellDef="let entry">
+              <strong class="time-entry-list__value">
+                {{ entry.totalValue | currency: 'BRL' }}
+              </strong>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let timeEntry">
-              @switch (timeEntry.status) {
-                @case ('PENDING') { Pendente }
-                @case ('BILLED') { Faturado }
-                @case ('PAID') { Pago }
-                @case ('CANCELLED') { Cancelado }
-              }
+
+            <td mat-cell *matCellDef="let entry">
+              <span
+                class="time-entry-list__status"
+                [class.time-entry-list__status--pending]="entry.status === 'PENDING'"
+                [class.time-entry-list__status--billed]="entry.status === 'BILLED'"
+                [class.time-entry-list__status--paid]="entry.status === 'PAID'"
+                [class.time-entry-list__status--cancelled]="entry.status === 'CANCELLED'"
+              >
+                <span class="time-entry-list__status-dot"></span>
+
+                @switch (entry.status) {
+                  @case ('PENDING') {
+                    Pendente
+                  }
+
+                  @case ('BILLED') {
+                    Faturado
+                  }
+
+                  @case ('PAID') {
+                    Pago
+                  }
+
+                  @case ('CANCELLED') {
+                    Cancelado
+                  }
+                }
+              </span>
             </td>
           </ng-container>
 
+          <!-- Ações -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Ações</th>
-            <td mat-cell *matCellDef="let timeEntry">
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Editar apontamento"
-                (click)="openEditDialog(timeEntry)"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
 
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Excluir apontamento"
-                (click)="deleteTimeEntry(timeEntry)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+            <td mat-cell *matCellDef="let entry">
+              <div class="time-entry-list__actions">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="time-entry-list__action time-entry-list__action--edit"
+                  matTooltip="Editar apontamento"
+                  aria-label="Editar apontamento"
+                  (click)="openEditDialog(entry)"
+                >
+                  <mat-icon> edit </mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="time-entry-list__action time-entry-list__action--delete"
+                  matTooltip="Excluir apontamento"
+                  aria-label="Excluir apontamento"
+                  (click)="deleteTimeEntry(entry)"
+                >
+                  <mat-icon> delete_outline </mat-icon>
+                </button>
+              </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
     } @else {
-      <div class="app-empty-state">Nenhum apontamento encontrado para os filtros informados.</div>
+      <div class="time-entry-list__empty">
+        <div class="time-entry-list__empty-icon">
+          <mat-icon> more_time </mat-icon>
+        </div>
+
+        <h2>Nenhum apontamento encontrado</h2>
+
+        <p>Registre suas horas ou altere os filtros para visualizar outros lançamentos.</p>
+
+        <button mat-flat-button type="button" (click)="openCreateDialog()">
+          <mat-icon> add </mat-icon>
+
+          Novo apontamento
+        </button>
+      </div>
     }
   }
 </section>

@@ -15,9 +15,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // RxJS
-import { BehaviorSubject, combineLatest, map, shareReplay, startWith, switchMap } from 'rxjs';
+import { combineLatest, map, shareReplay, startWith } from 'rxjs';
 
 // Interno
 import { PartnerService } from '../../partners/partner.service';
@@ -26,6 +28,7 @@ import { ConfirmDialog } from '../../shared/ui/confirm-dialog/confirm-dialog';
 import { TimeEntryForm } from '../time-entry-form/time-entry-form';
 import { TimeEntry } from '../time-entry.model';
 import { TimeEntryService } from '../time-entry.service';
+import { DurationPipe } from '../../shared/pipes/duration.pipe';
 
 @Component({
   selector: 'app-time-entry-list',
@@ -40,6 +43,9 @@ import { TimeEntryService } from '../time-entry.service';
     MatInputModule,
     MatSelectModule,
     MatTableModule,
+    MatDatepickerModule,
+    MatTooltipModule,
+    DurationPipe,
   ],
   templateUrl: './time-entry-list.html',
   styleUrl: './time-entry-list.scss',
@@ -52,11 +58,10 @@ export class TimeEntryList {
   private readonly formBuilder = inject(FormBuilder);
 
   readonly displayedColumns = [
-    'startDate',
-    'endDate',
-    'partner',
     'project',
+    'period',
     'hours',
+    'hourlyRate',
     'totalValue',
     'status',
     'actions',
@@ -70,10 +75,7 @@ export class TimeEntryList {
     status: [''],
   });
 
-  private readonly refreshTimeEntries$ = new BehaviorSubject<void>(undefined);
-
-  private readonly sourceTimeEntries$ = this.refreshTimeEntries$.pipe(
-    switchMap(() => this.timeEntryService.getTimeEntries()),
+  private readonly sourceTimeEntries$ = this.timeEntryService.getTimeEntries().pipe(
     shareReplay({
       bufferSize: 1,
       refCount: true,
@@ -171,11 +173,6 @@ export class TimeEntryList {
     });
   }
 
-  /** Solicita uma nova consulta dos apontamentos. */
-  loadTimeEntries(): void {
-    this.refreshTimeEntries$.next();
-  }
-
   /** Limpa todos os filtros da tela. */
   clearFilters(): void {
     this.filterForm.reset({
@@ -193,12 +190,6 @@ export class TimeEntryList {
       width: '760px',
       maxWidth: '95vw',
     });
-
-    dialogRef.afterClosed().subscribe((created) => {
-      if (created) {
-        this.loadTimeEntries();
-      }
-    });
   }
 
   /** Abre o formulário preenchido com o apontamento selecionado. */
@@ -207,12 +198,6 @@ export class TimeEntryList {
       width: '760px',
       maxWidth: '95vw',
       data: timeEntry,
-    });
-
-    dialogRef.afterClosed().subscribe((updated) => {
-      if (updated) {
-        this.loadTimeEntries();
-      }
     });
   }
 
@@ -231,9 +216,7 @@ export class TimeEntryList {
         return;
       }
 
-      this.timeEntryService.deleteTimeEntry(timeEntry.id).subscribe(() => {
-        this.loadTimeEntries();
-      });
+      this.timeEntryService.deleteTimeEntry(timeEntry.id).subscribe();
     });
   }
 }

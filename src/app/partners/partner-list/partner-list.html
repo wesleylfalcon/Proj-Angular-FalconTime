@@ -1,78 +1,161 @@
 <section class="app-page partner-list">
-  <div class="app-page__header">
+  <header class="partner-list__header">
     <div>
+      <span class="partner-list__eyebrow"> Cadastros </span>
+
       <h1>Parceiros</h1>
-      <p>Cadastro e gerenciamento de parceiros.</p>
+
+      <p>Gerencie empresas e clientes vinculados aos seus projetos.</p>
     </div>
 
-    <button mat-flat-button type="button" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+    <button
+      mat-flat-button
+      type="button"
+      class="partner-list__new-button"
+      (click)="openCreateDialog()"
+    >
+      <mat-icon> add </mat-icon>
+
       Novo parceiro
     </button>
-  </div>
+  </header>
 
   @if (partners$ | async; as partners) {
+    <section class="partner-list__summary">
+      <div>
+        <span> Parceiros cadastrados </span>
+
+        <strong>
+          {{ partners.length }}
+        </strong>
+      </div>
+
+      <mat-icon> groups </mat-icon>
+    </section>
+
     @if (partners.length) {
-      <div class="app-table-wrapper">
+      <div class="app-table-wrapper partner-list__table-wrapper">
         <table mat-table [dataSource]="partners" class="app-table partner-list__table">
+          <!-- Parceiro -->
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nome</th>
-            <td mat-cell *matCellDef="let partner">{{ partner.name }}</td>
+            <th mat-header-cell *matHeaderCellDef>Parceiro</th>
+
+            <td mat-cell *matCellDef="let partner">
+              <div class="partner-list__partner">
+                <div class="partner-list__partner-icon">
+                  <mat-icon> business </mat-icon>
+                </div>
+
+                <div>
+                  <strong>
+                    {{ partner.name }}
+                  </strong>
+
+                  <span>
+                    {{ partner.document }}
+                  </span>
+                </div>
+              </div>
+            </td>
           </ng-container>
 
-          <ng-container matColumnDef="document">
-            <th mat-header-cell *matHeaderCellDef>CNPJ</th>
-            <td mat-cell *matCellDef="let partner">{{ partner.document }}</td>
-          </ng-container>
-
+          <!-- Responsável -->
           <ng-container matColumnDef="contactName">
             <th mat-header-cell *matHeaderCellDef>Responsável</th>
-            <td mat-cell *matCellDef="let partner">{{ partner.contactName }}</td>
+
+            <td mat-cell *matCellDef="let partner">
+              <div class="partner-list__contact">
+                <strong>
+                  {{ partner.contactName }}
+                </strong>
+
+                <span>
+                  {{ partner.contactEmail }}
+                </span>
+              </div>
+            </td>
           </ng-container>
 
+          <!-- Valor/hora -->
           <ng-container matColumnDef="hourlyRate">
             <th mat-header-cell *matHeaderCellDef>Valor/hora</th>
+
             <td mat-cell *matCellDef="let partner">
-              {{ partner.hourlyRate | currency: 'BRL' }}
+              <strong class="partner-list__value">
+                {{ partner.hourlyRate | currency: 'BRL' }}
+              </strong>
             </td>
           </ng-container>
 
+          <!-- Status -->
           <ng-container matColumnDef="active">
             <th mat-header-cell *matHeaderCellDef>Status</th>
+
             <td mat-cell *matCellDef="let partner">
-              {{ partner.active ? 'Ativo' : 'Inativo' }}
+              <span
+                class="partner-list__status"
+                [class.partner-list__status--active]="partner.active"
+                [class.partner-list__status--inactive]="!partner.active"
+              >
+                <span class="partner-list__status-dot"></span>
+
+                {{ partner.active ? 'Ativo' : 'Inativo' }}
+              </span>
             </td>
           </ng-container>
 
+          <!-- Ações -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Ações</th>
-            <td mat-cell *matCellDef="let partner">
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Editar parceiro"
-                (click)="openEditDialog(partner)"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
 
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Excluir parceiro"
-                (click)="deletePartner(partner)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+            <td mat-cell *matCellDef="let partner">
+              <div class="partner-list__actions">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="partner-list__action partner-list__action--edit"
+                  matTooltip="Editar parceiro"
+                  aria-label="Editar parceiro"
+                  (click)="openEditDialog(partner)"
+                >
+                  <mat-icon> edit </mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="partner-list__action partner-list__action--delete"
+                  matTooltip="Excluir parceiro"
+                  aria-label="Excluir parceiro"
+                  (click)="deletePartner(partner)"
+                >
+                  <mat-icon> delete_outline </mat-icon>
+                </button>
+              </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
     } @else {
-      <div class="app-empty-state">Nenhum parceiro cadastrado.</div>
+      <div class="partner-list__empty">
+        <div class="partner-list__empty-icon">
+          <mat-icon> group_add </mat-icon>
+        </div>
+
+        <h2>Nenhum parceiro cadastrado</h2>
+
+        <p>Cadastre seu primeiro parceiro para começar a criar projetos.</p>
+
+        <button mat-flat-button type="button" (click)="openCreateDialog()">
+          <mat-icon> add </mat-icon>
+
+          Cadastrar parceiro
+        </button>
+      </div>
     }
   }
 </section>

@@ -10,6 +10,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 // Material
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 // Router
@@ -20,7 +21,16 @@ import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+  ],
+
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -32,6 +42,7 @@ export class Login {
   private readonly router = inject(Router);
 
   loading = false;
+
   errorMessage = '';
 
   readonly form = this.formBuilder.nonNullable.group({
@@ -44,13 +55,15 @@ export class Login {
    * Autentica o usuário e redireciona
    * para o dashboard.
    */
-  async submit(): Promise<void> {
+  async login(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+
       return;
     }
 
     this.loading = true;
+
     this.errorMessage = '';
 
     try {

@@ -1,11 +1,17 @@
 .main-layout {
   display: flex;
-  min-height: calc(100vh - 64px);
+
+  min-height: calc(100vh - 72px);
+
+  background: var(--falcon-background);
 
   &__content {
     flex: 1;
     min-width: 0;
-    padding: 1.5rem;
+
+    padding: 2rem;
+
+    overflow-x: hidden;
   }
 }
 

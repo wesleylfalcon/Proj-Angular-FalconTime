@@ -1,90 +1,201 @@
 <section class="app-page project-list">
-  <div class="app-page__header">
+  <header class="project-list__header">
     <div>
+      <span class="project-list__eyebrow"> Cadastros </span>
+
       <h1>Projetos</h1>
-      <p>Cadastro e gerenciamento de projetos.</p>
+
+      <p>Organize seus projetos, modelos de cobrança e valores de trabalho.</p>
     </div>
 
-    <button mat-flat-button type="button" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
+    <button
+      mat-flat-button
+      type="button"
+      class="project-list__new-button"
+      (click)="openCreateDialog()"
+    >
+      <mat-icon> add </mat-icon>
+
       Novo projeto
     </button>
-  </div>
+  </header>
 
   @if (projects$ | async; as projects) {
+    <section class="project-list__summary">
+      <div>
+        <span> Projetos cadastrados </span>
+
+        <strong>
+          {{ projects.length }}
+        </strong>
+      </div>
+
+      <mat-icon> folder_open </mat-icon>
+    </section>
+
     @if (projects.length) {
-      <div class="app-table-wrapper">
+      <div class="app-table-wrapper project-list__table-wrapper">
         <table mat-table [dataSource]="projects" class="app-table project-list__table">
+          <!-- Projeto -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Projeto</th>
-            <td mat-cell *matCellDef="let project">{{ project.name }}</td>
+
+            <td mat-cell *matCellDef="let project">
+              <div class="project-list__project">
+                <div class="project-list__project-icon">
+                  <mat-icon> work_outline </mat-icon>
+                </div>
+
+                <div>
+                  <strong>
+                    {{ project.name }}
+                  </strong>
+
+                  <span>
+                    {{ project.partnerName }}
+                  </span>
+                </div>
+              </div>
+            </td>
           </ng-container>
 
+          <!-- Parceiro -->
           <ng-container matColumnDef="partner">
             <th mat-header-cell *matHeaderCellDef>Parceiro</th>
-            <td mat-cell *matCellDef="let project">{{ project.partnerName }}</td>
-          </ng-container>
 
-          <ng-container matColumnDef="billingType">
-            <th mat-header-cell *matHeaderCellDef>Tipo</th>
             <td mat-cell *matCellDef="let project">
-              {{ project.billingType === 'CLOSED_SCOPE' ? 'Escopo fechado' : 'Por hora' }}
+              {{ project.partnerName }}
             </td>
           </ng-container>
 
+          <!-- Tipo de cobrança -->
+          <ng-container matColumnDef="billingType">
+            <th mat-header-cell *matHeaderCellDef>Cobrança</th>
+
+            <td mat-cell *matCellDef="let project">
+              <span
+                class="project-list__billing"
+                [class.project-list__billing--closed]="project.billingType === 'CLOSED_SCOPE'"
+                [class.project-list__billing--hourly]="project.billingType === 'HOURLY'"
+              >
+                <mat-icon>
+                  {{ project.billingType === 'CLOSED_SCOPE' ? 'inventory_2' : 'schedule' }}
+                </mat-icon>
+
+                {{ project.billingType === 'CLOSED_SCOPE' ? 'Escopo fechado' : 'Por hora' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Horas estimadas -->
           <ng-container matColumnDef="estimatedHours">
             <th mat-header-cell *matHeaderCellDef>Horas estimadas</th>
-            <td mat-cell *matCellDef="let project">{{ project.estimatedHours }}h</td>
+
+            <td mat-cell *matCellDef="let project">
+              <span class="project-list__hours">
+                {{ project.estimatedHours | duration }}
+              </span>
+            </td>
           </ng-container>
 
+          <!-- Valor/hora -->
           <ng-container matColumnDef="hourlyRate">
             <th mat-header-cell *matHeaderCellDef>Valor/hora</th>
+
             <td mat-cell *matCellDef="let project">
-              {{ project.hourlyRate | currency: 'BRL' }}
+              <strong class="project-list__value">
+                {{ project.hourlyRate | currency: 'BRL' }}
+              </strong>
             </td>
           </ng-container>
 
+          <!-- Status -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
+
             <td mat-cell *matCellDef="let project">
-              @switch (project.status) {
-                @case ('PLANNED') { Planejado }
-                @case ('IN_PROGRESS') { Em andamento }
-                @case ('COMPLETED') { Concluído }
-                @case ('CANCELLED') { Cancelado }
-              }
+              <span
+                class="project-list__status"
+                [class.project-list__status--planned]="project.status === 'PLANNED'"
+                [class.project-list__status--progress]="project.status === 'IN_PROGRESS'"
+                [class.project-list__status--completed]="project.status === 'COMPLETED'"
+                [class.project-list__status--cancelled]="project.status === 'CANCELLED'"
+              >
+                <span class="project-list__status-dot"></span>
+
+                @switch (project.status) {
+                  @case ('PLANNED') {
+                    Planejado
+                  }
+
+                  @case ('IN_PROGRESS') {
+                    Em andamento
+                  }
+
+                  @case ('COMPLETED') {
+                    Concluído
+                  }
+
+                  @case ('CANCELLED') {
+                    Cancelado
+                  }
+                }
+              </span>
             </td>
           </ng-container>
 
+          <!-- Ações -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Ações</th>
-            <td mat-cell *matCellDef="let project">
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Editar projeto"
-                (click)="openEditDialog(project)"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
 
-              <button
-                mat-icon-button
-                type="button"
-                aria-label="Excluir projeto"
-                (click)="deleteProject(project)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+            <td mat-cell *matCellDef="let project">
+              <div class="project-list__actions">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="project-list__action project-list__action--edit"
+                  matTooltip="Editar projeto"
+                  aria-label="Editar projeto"
+                  (click)="openEditDialog(project)"
+                >
+                  <mat-icon> edit </mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="project-list__action project-list__action--delete"
+                  matTooltip="Excluir projeto"
+                  aria-label="Excluir projeto"
+                  (click)="deleteProject(project)"
+                >
+                  <mat-icon> delete_outline </mat-icon>
+                </button>
+              </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
     } @else {
-      <div class="app-empty-state">Nenhum projeto cadastrado.</div>
+      <div class="project-list__empty">
+        <div class="project-list__empty-icon">
+          <mat-icon> create_new_folder </mat-icon>
+        </div>
+
+        <h2>Nenhum projeto cadastrado</h2>
+
+        <p>Cadastre seu primeiro projeto para começar a organizar suas horas e recebimentos.</p>
+
+        <button mat-flat-button type="button" (click)="openCreateDialog()">
+          <mat-icon> add </mat-icon>
+
+          Criar projeto
+        </button>
+      </div>
     }
   }
 </section>

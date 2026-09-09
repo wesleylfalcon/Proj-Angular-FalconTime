@@ -13,15 +13,19 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
 
 // RxJS
-import { combineLatest, map, shareReplay } from 'rxjs';
+import { combineLatest, map, shareReplay, take } from 'rxjs';
 
 // Interno
 import { PartnerService } from '../../partners/partner.service';
 import { ProjectService } from '../../projects/project.service';
 import { TimeEntry, TimeEntryStatus } from '../time-entry.model';
 import { TimeEntryService } from '../time-entry.service';
+import { dateToIsoDate, isoDateToDate } from '../../shared/utils/date.utils';
+import { decimalHoursToTime, isValidTime, timeToDecimalHours } from '../../shared/utils/time.utils';
 
 @Component({
   selector: 'app-time-entry-form',
@@ -34,6 +38,8 @@ import { TimeEntryService } from '../time-entry.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
+    MatIconModule,
   ],
   templateUrl: './time-entry-form.html',
   styleUrl: './time-entry-form.scss',
@@ -76,9 +82,9 @@ export class TimeEntryForm {
   readonly form = this.formBuilder.nonNullable.group({
     projectId: ['', Validators.required],
     partnerId: ['', Validators.required],
-    startDate: ['', Validators.required],
-    endDate: [''],
-    hours: [0, [Validators.required, Validators.min(0.01)]],
+    startDate: [null as Date | null, Validators.required],
+    endDate: [null as Date | null],
+    hours: ['00:00', Validators.required],
     description: ['', Validators.required],
     hourlyRate: [0, [Validators.required, Validators.min(0.01)]],
     totalValue: [0],
@@ -89,14 +95,16 @@ export class TimeEntryForm {
     if (this.data) {
       this.form.patchValue({
         ...this.data,
-        endDate: this.data.endDate ?? '',
+        startDate: isoDateToDate(this.data.startDate),
+        endDate: isoDateToDate(this.data.endDate),
+        hours: decimalHoursToTime(this.data.hours),
       });
     }
   }
 
   /** Preenche parceiro e valor/hora com base no projeto selecionado. */
   fillProjectData(projectId: string): void {
-    this.projects$.subscribe((projects) => {
+    this.projects$.pipe(take(1)).subscribe((projects) => {
       const project = projects.find((item) => item.id === projectId);
 
       if (!project) {
@@ -114,7 +122,7 @@ export class TimeEntryForm {
 
   /** Recalcula o valor total com base em horas e valor/hora. */
   calculateTotalValue(): void {
-    const hours = this.form.controls.hours.value;
+    const hours = timeToDecimalHours(this.form.controls.hours.value);
     const hourlyRate = this.form.controls.hourlyRate.value;
 
     this.form.controls.totalValue.setValue(hours * hourlyRate);
@@ -129,24 +137,43 @@ export class TimeEntryForm {
 
     const formValue = this.form.getRawValue();
 
-    if (formValue.endDate && formValue.endDate < formValue.startDate) {
-      this.form.controls.endDate.setErrors({ beforeStart: true });
-      this.form.controls.endDate.markAsTouched();
+    if (!isValidTime(formValue.hours)) {
+      this.form.controls.hours.setErrors({
+        invalidTime: true,
+      });
+
       return;
     }
+
+    const startDate = dateToIsoDate(formValue.startDate);
+    const endDate = formValue.endDate ? dateToIsoDate(formValue.endDate) : null;
+
+    if (endDate && endDate < startDate) {
+      this.form.controls.endDate.setErrors({
+        beforeStart: true,
+      });
+
+      this.form.controls.endDate.markAsTouched();
+
+      return;
+    }
+
+    const normalizedValue = {
+      ...formValue,
+      startDate,
+      endDate,
+      hours: timeToDecimalHours(formValue.hours),
+    };
 
     if (this.form.controls.endDate.hasError('beforeStart')) {
       this.form.controls.endDate.setErrors(null);
     }
 
-    const normalizedEndDate = formValue.endDate || null;
-
     if (this.data) {
       this.timeEntryService
         .updateTimeEntry({
           ...this.data,
-          ...formValue,
-          endDate: normalizedEndDate,
+          ...normalizedValue,
         })
         .subscribe(() => this.dialogRef.close(true));
 
@@ -155,8 +182,7 @@ export class TimeEntryForm {
 
     this.timeEntryService
       .createTimeEntry({
-        ...formValue,
-        endDate: normalizedEndDate,
+        ...normalizedValue,
       })
       .subscribe(() => this.dialogRef.close(true));
   }

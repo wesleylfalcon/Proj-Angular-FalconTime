@@ -10,6 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
 
 // Interno
 import { Partner } from '../partner.model';
@@ -24,6 +25,7 @@ import { PartnerService } from '../partner.service';
     MatFormFieldModule,
     MatInputModule,
     MatSlideToggleModule,
+    MatIconModule,
   ],
   templateUrl: './partner-form.html',
   styleUrl: './partner-form.scss',

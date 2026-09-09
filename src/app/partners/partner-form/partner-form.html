@@ -1,70 +1,154 @@
-<h2 mat-dialog-title>
-  {{ data ? 'Editar parceiro' : 'Novo parceiro' }}
-</h2>
+<div class="partner-form__header">
+  <div class="partner-form__header-icon">
+    <mat-icon> business </mat-icon>
+  </div>
 
-<mat-dialog-content>
-  <form
-    id="partner-form"
-    class="app-form-grid partner-form"
-    [formGroup]="form"
-    (ngSubmit)="save()"
-  >
-    <mat-form-field appearance="outline">
-      <mat-label>Nome</mat-label>
-      <input matInput formControlName="name" />
+  <div>
+    <span> Parceiro </span>
 
-      @if (form.controls.name.touched && form.controls.name.invalid) {
-        <mat-error>Informe um nome válido.</mat-error>
-      }
-    </mat-form-field>
+    <h2 mat-dialog-title>
+      {{ data ? 'Editar parceiro' : 'Novo parceiro' }}
+    </h2>
 
-    <mat-form-field appearance="outline">
-      <mat-label>CNPJ</mat-label>
-      <input matInput formControlName="document" />
+    <p>
+      {{
+        data
+          ? 'Atualize os dados cadastrais e comerciais do parceiro.'
+          : 'Cadastre os dados necessários para utilizar o parceiro em seus projetos.'
+      }}
+    </p>
+  </div>
+</div>
 
-      @if (form.controls.document.touched && form.controls.document.invalid) {
-        <mat-error>Informe o CNPJ.</mat-error>
-      }
-    </mat-form-field>
+<mat-dialog-content class="partner-form__content">
+  <form id="partner-form" class="partner-form" [formGroup]="form" (ngSubmit)="save()">
+    <!-- Dados principais -->
+    <section class="partner-form__section">
+      <div class="partner-form__section-title">
+        <mat-icon> domain </mat-icon>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Responsável</mat-label>
-      <input matInput formControlName="contactName" />
+        <div>
+          <strong> Dados principais </strong>
 
-      @if (form.controls.contactName.touched && form.controls.contactName.invalid) {
-        <mat-error>Informe o responsável.</mat-error>
-      }
-    </mat-form-field>
+          <span> Identificação do parceiro. </span>
+        </div>
+      </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>E-mail</mat-label>
-      <input matInput type="email" formControlName="contactEmail" />
+      <div class="partner-form__grid">
+        <mat-form-field appearance="outline" class="partner-form__field--wide">
+          <mat-label> Nome </mat-label>
 
-      @if (form.controls.contactEmail.touched && form.controls.contactEmail.invalid) {
-        <mat-error>Informe um e-mail válido.</mat-error>
-      }
-    </mat-form-field>
+          <mat-icon matPrefix> business </mat-icon>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Valor/hora</mat-label>
-      <span matTextPrefix>R$&nbsp;</span>
-      <input matInput type="number" min="0.01" step="0.01" formControlName="hourlyRate" />
+          <input matInput formControlName="name" autocomplete="organization" />
 
-      @if (form.controls.hourlyRate.touched && form.controls.hourlyRate.invalid) {
-        <mat-error>Informe um valor/hora válido.</mat-error>
-      }
-    </mat-form-field>
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <mat-error> Informe um nome válido. </mat-error>
+          }
+        </mat-form-field>
 
-    <mat-slide-toggle formControlName="active">
-      Parceiro ativo
-    </mat-slide-toggle>
+        <mat-form-field appearance="outline">
+          <mat-label> CNPJ </mat-label>
+
+          <mat-icon matPrefix> badge </mat-icon>
+
+          <input matInput formControlName="document" autocomplete="off" />
+
+          @if (form.controls.document.touched && form.controls.document.invalid) {
+            <mat-error> Informe o CNPJ. </mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- Contato -->
+    <section class="partner-form__section">
+      <div class="partner-form__section-title">
+        <mat-icon> person_outline </mat-icon>
+
+        <div>
+          <strong> Contato </strong>
+
+          <span> Pessoa responsável pelo parceiro. </span>
+        </div>
+      </div>
+
+      <div class="partner-form__grid">
+        <mat-form-field appearance="outline">
+          <mat-label> Responsável </mat-label>
+
+          <mat-icon matPrefix> person </mat-icon>
+
+          <input matInput formControlName="contactName" autocomplete="name" />
+
+          @if (form.controls.contactName.touched && form.controls.contactName.invalid) {
+            <mat-error> Informe o responsável. </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label> E-mail </mat-label>
+
+          <mat-icon matPrefix> mail_outline </mat-icon>
+
+          <input matInput type="email" formControlName="contactEmail" autocomplete="email" />
+
+          @if (form.controls.contactEmail.touched && form.controls.contactEmail.invalid) {
+            <mat-error> Informe um e-mail válido. </mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- Configuração comercial -->
+    <section class="partner-form__section">
+      <div class="partner-form__section-title">
+        <mat-icon> payments </mat-icon>
+
+        <div>
+          <strong> Configuração comercial </strong>
+
+          <span> Valor padrão utilizado nos novos projetos. </span>
+        </div>
+      </div>
+
+      <div class="partner-form__grid">
+        <mat-form-field appearance="outline">
+          <mat-label> Valor/hora </mat-label>
+
+          <span matTextPrefix> R$&nbsp; </span>
+
+          <input matInput type="number" min="0.01" step="0.01" formControlName="hourlyRate" />
+
+          @if (form.controls.hourlyRate.touched && form.controls.hourlyRate.invalid) {
+            <mat-error> Informe um valor/hora válido. </mat-error>
+          }
+        </mat-form-field>
+
+        <div class="partner-form__status">
+          <div>
+            <mat-icon> verified </mat-icon>
+
+            <div>
+              <strong> Parceiro ativo </strong>
+
+              <span> Parceiros ativos podem ser utilizados em novos projetos. </span>
+            </div>
+          </div>
+
+          <mat-slide-toggle formControlName="active" aria-label="Parceiro ativo"></mat-slide-toggle>
+        </div>
+      </div>
+    </section>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="partner-form__actions">
   <button mat-button type="button" mat-dialog-close>Cancelar</button>
 
   <button mat-flat-button type="submit" form="partner-form">
-    {{ data ? 'Salvar alterações' : 'Salvar' }}
+    <mat-icon> save </mat-icon>
+
+    {{ data ? 'Salvar alterações' : 'Salvar parceiro' }}
   </button>
 </mat-dialog-actions>

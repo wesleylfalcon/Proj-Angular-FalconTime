@@ -1,13 +1,322 @@
 .partner-form {
-  mat-slide-toggle {
-    grid-column: 1 / -1;
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1.25rem;
+
+  &__header {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 1rem;
+
+    padding:
+      1.5rem 1.5rem 1.1rem;
+
+    border-bottom:
+      1px solid var(--falcon-border);
+
+    background:
+      linear-gradient(135deg,
+        #ffffff 0%,
+        #f8fbff 100%);
+
+    >div:last-child {
+      min-width: 0;
+    }
+
+    span {
+      color:
+        var(--falcon-primary);
+
+      font-size: var(--falcon-font-xs);
+      font-weight: var(--falcon-font-bold);
+
+      letter-spacing:
+        0.1em;
+
+      text-transform:
+        uppercase;
+    }
+
+    h2 {
+      margin:
+        0.15rem 0 0;
+
+      padding: 0;
+
+      color:
+        var(--falcon-text);
+
+      font-size: var(--falcon-font-xl);
+      font-weight: var(--falcon-font-bold);
+
+      letter-spacing:
+        -0.03em;
+    }
+
+    p {
+      margin:
+        0.35rem 0 0;
+
+      color:
+        var(--falcon-text-secondary);
+
+      font-size: var(--falcon-font-md);
+
+      line-height: 1.45;
+    }
+  }
+
+  &__header-icon {
+    display: flex;
+
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius:
+      0.8rem;
+
+    color:
+      var(--falcon-primary);
+
+    background:
+      var(--falcon-primary-soft);
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+
+      font-size: 24px;
+    }
+  }
+
+  &__content {
+    width: min(720px, 85vw);
+
+    padding:
+      1.25rem 1.5rem !important;
+  }
+
+  &__section {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.85rem;
+
+    padding-bottom: 1.25rem;
+
+    border-bottom:
+      1px solid var(--falcon-border);
+
+    &:last-child {
+      padding-bottom: 0;
+
+      border-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 0.65rem;
+
+    >mat-icon {
+      width: 20px;
+      height: 20px;
+
+      color:
+        var(--falcon-primary);
+
+      font-size: 20px;
+    }
+
+    >div {
+      display: flex;
+
+      flex-direction: column;
+    }
+
+    strong {
+      color:
+        var(--falcon-text);
+
+      font-size: var(--falcon-font-md);
+      font-weight: var(--falcon-font-semibold);
+    }
+
+    span {
+      margin-top: 0.1rem;
+
+      color:
+        var(--falcon-text-secondary);
+
+      font-size: var(--falcon-font-xs);
+    }
+  }
+
+  &__grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 0.9rem;
+
+    align-items: start;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  &__field--wide {
+    grid-column:
+      1 / -1;
+  }
+
+  &__status {
+    display: flex;
+
+    min-height: 56px;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding:
+      0.7rem 0.9rem;
+
+    border:
+      1px solid var(--falcon-border);
+
+    border-radius:
+      0.75rem;
+
+    background:
+      var(--falcon-surface-soft);
+
+    >div {
+      display: flex;
+
+      min-width: 0;
+
+      align-items: center;
+
+      gap: 0.7rem;
+
+      >mat-icon {
+        flex-shrink: 0;
+
+        color:
+          #148c54;
+      }
+
+      >div {
+        display: flex;
+
+        min-width: 0;
+
+        flex-direction: column;
+      }
+    }
+
+    strong {
+      color:
+        var(--falcon-text);
+
+      font-size: var(--falcon-font-md);
+      font-weight: var(--falcon-font-semibold);
+    }
+
+    span {
+      margin-top: 0.1rem;
+
+      color:
+        var(--falcon-text-secondary);
+
+      font-size: var(--falcon-font-xs);
+
+      line-height: 1.35;
+    }
+
+    mat-slide-toggle {
+      flex-shrink: 0;
+    }
+  }
+
+  &__actions {
+    gap: 0.5rem;
+
+    padding:
+      0.9rem 1.5rem 1.25rem;
+
+    border-top:
+      1px solid var(--falcon-border);
+
+    button {
+      min-height: 42px;
+
+      border-radius:
+        0.65rem !important;
+
+      &:last-child {
+        min-width: 150px;
+      }
+    }
+
+    mat-icon {
+      margin-right: 0.3rem;
+    }
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 650px) {
   .partner-form {
-    mat-slide-toggle {
-      grid-column: auto;
+    &__header {
+      padding:
+        1.2rem 1rem 1rem;
+    }
+
+    &__content {
+      width: 90vw;
+
+      padding:
+        1rem !important;
+    }
+
+    &__grid {
+      grid-template-columns:
+        1fr;
+    }
+
+    &__field--wide {
+      grid-column:
+        auto;
+    }
+
+    &__status {
+      align-items:
+        flex-start;
+
+      flex-direction:
+        column;
+    }
+
+    &__actions {
+      padding:
+        0.8rem 1rem 1rem;
     }
   }
 }

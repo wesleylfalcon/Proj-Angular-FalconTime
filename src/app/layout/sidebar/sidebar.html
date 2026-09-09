@@ -1,28 +1,41 @@
-<nav class="sidebar">
-  <mat-nav-list>
-    <a
-      mat-list-item
-      routerLink="/"
-      routerLinkActive="sidebar__item--active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <mat-icon matListItemIcon>dashboard</mat-icon>
-      <span matListItemTitle>Dashboard</span>
+<aside class="sidebar">
+  <nav>
+    <span class="sidebar__group"> Principal </span>
+
+    <a class="sidebar__item" routerLink="/dashboard" routerLinkActive="sidebar__item--active">
+      <mat-icon> dashboard </mat-icon>
+
+      <span> Dashboard </span>
     </a>
 
-    <a mat-list-item routerLink="/partners" routerLinkActive="sidebar__item--active">
-      <mat-icon matListItemIcon>handshake</mat-icon>
-      <span matListItemTitle>Parceiros</span>
+    <span class="sidebar__group"> Cadastros </span>
+
+    <a class="sidebar__item" routerLink="/partners" routerLinkActive="sidebar__item--active">
+      <mat-icon> groups </mat-icon>
+
+      <span> Parceiros </span>
     </a>
 
-    <a mat-list-item routerLink="/projects" routerLinkActive="sidebar__item--active">
-      <mat-icon matListItemIcon>folder</mat-icon>
-      <span matListItemTitle>Projetos</span>
+    <a class="sidebar__item" routerLink="/projects" routerLinkActive="sidebar__item--active">
+      <mat-icon> folder </mat-icon>
+
+      <span> Projetos </span>
     </a>
 
-    <a mat-list-item routerLink="/time-entries" routerLinkActive="sidebar__item--active">
-      <mat-icon matListItemIcon>schedule</mat-icon>
-      <span matListItemTitle>Apontamentos</span>
+    <span class="sidebar__group"> Apontamentos </span>
+
+    <a class="sidebar__item" routerLink="/time-entries" routerLinkActive="sidebar__item--active">
+      <mat-icon> schedule </mat-icon>
+
+      <span> Meus apontamentos </span>
     </a>
-  </mat-nav-list>
-</nav>
+  </nav>
+
+  <div class="sidebar__footer">
+    <img src="/branding/falcon-time-mark.svg" alt="" class="sidebar__brand-mark" />
+
+    <span> Falcon Time </span>
+
+    <small> v1.0.0 </small>
+  </div>
+</aside>

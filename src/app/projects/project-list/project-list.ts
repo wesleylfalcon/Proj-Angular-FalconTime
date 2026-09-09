@@ -9,9 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // RxJS
-import { BehaviorSubject, combineLatest, map, switchMap } from 'rxjs';
+import { combineLatest, map } from 'rxjs';
 
 // Interno
 import { PartnerService } from '../../partners/partner.service';
@@ -19,10 +20,11 @@ import { ConfirmDialog } from '../../shared/ui/confirm-dialog/confirm-dialog';
 import { ProjectForm } from '../project-form/project-form';
 import { Project } from '../project.model';
 import { ProjectService } from '../project.service';
+import { DurationPipe } from '../../shared/pipes/duration.pipe';
 
 @Component({
   selector: 'app-project-list',
-  imports: [AsyncPipe, CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule],
+  imports: [AsyncPipe, CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule, MatTooltipModule, DurationPipe],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss',
 })
@@ -41,11 +43,9 @@ export class ProjectList {
     'actions',
   ];
 
-  private readonly refreshProjects$ = new BehaviorSubject<void>(undefined);
-
   /** Combina projetos e parceiros para exibir o nome do parceiro na tabela. */
   readonly projects$ = combineLatest([
-    this.refreshProjects$.pipe(switchMap(() => this.projectService.getProjects())),
+    this.projectService.getProjects(),
     this.partnerService.getPartners(),
   ]).pipe(
     map(([projects, partners]) =>
@@ -58,22 +58,11 @@ export class ProjectList {
     ),
   );
 
-  /** Solicita uma nova consulta dos projetos cadastrados. */
-  loadProjects(): void {
-    this.refreshProjects$.next();
-  }
-
   /** Abre o formulário para cadastro de projeto. */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(ProjectForm, {
       width: '760px',
       maxWidth: '95vw',
-    });
-
-    dialogRef.afterClosed().subscribe((created) => {
-      if (created) {
-        this.loadProjects();
-      }
     });
   }
 
@@ -83,12 +72,6 @@ export class ProjectList {
       width: '760px',
       maxWidth: '95vw',
       data: project,
-    });
-
-    dialogRef.afterClosed().subscribe((updated) => {
-      if (updated) {
-        this.loadProjects();
-      }
     });
   }
 
@@ -107,9 +90,7 @@ export class ProjectList {
         return;
       }
 
-      this.projectService.deleteProject(project.id).subscribe(() => {
-        this.loadProjects();
-      });
+      this.projectService.deleteProject(project.id).subscribe();
     });
   }
 }

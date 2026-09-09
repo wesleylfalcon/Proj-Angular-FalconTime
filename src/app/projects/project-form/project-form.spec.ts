@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
+// Material
+import { provideNativeDateAdapter } from '@angular/material/core';
+
 import { ProjectForm } from './project-form';
 
 describe('ProjectForm', () => {
@@ -10,17 +13,22 @@ describe('ProjectForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectForm],
-      providers: [        
+      providers: [
+        provideNativeDateAdapter(),
+
         {
           provide: MAT_DIALOG_DATA,
           useValue: null,
         },
+
         {
-          provide: MatDialogRef,// Simula o controle do dialog fornecido pelo Angular Material.
+          provide: MatDialogRef,
           useValue: {
             close: () => {},
           },
         },
+
+        // ...demais mocks/providers que você já tem
       ],
     }).compileComponents();
 

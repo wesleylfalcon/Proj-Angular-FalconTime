@@ -25,6 +25,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { PartnerService } from '../partners/partner.service';
 import { ProjectService } from '../projects/project.service';
 import { TimeEntryService } from '../time-entries/time-entry.service';
+import { DurationPipe } from '../shared/pipes/duration.pipe';
 
 @Component({
   selector: 'app-dashboard',
@@ -38,6 +39,7 @@ import { TimeEntryService } from '../time-entries/time-entry.service';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    DurationPipe,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -56,7 +58,7 @@ export class Dashboard {
   });
 
   /**
-   * Centraliza os dados do dashboard e evita consultas HTTP repetidas
+   * Centraliza os dados do dashboard e evita consultas repetidas ao backend
    * entre filtros, indicadores e gráficos.
    */
   private readonly data$ = combineLatest([
@@ -171,7 +173,8 @@ export class Dashboard {
         hoursByProject: {
           labels: Array.from(hoursByProject.keys()).map(
             (projectId) =>
-              projects.find((project) => project.id === projectId)?.name ?? 'Projeto não encontrado',
+              projects.find((project) => project.id === projectId)?.name ??
+              'Projeto não encontrado',
           ),
           datasets: [
             {
@@ -184,15 +187,17 @@ export class Dashboard {
         valueByPartner: {
           labels: Array.from(valueByPartner.keys()).map(
             (partnerId) =>
-              partners.find((partner) => partner.id === partnerId)?.name ?? 'Parceiro não encontrado',
+              partners.find((partner) => partner.id === partnerId)?.name ??
+              'Parceiro não encontrado',
           ),
+
           datasets: [
             {
               label: 'Valor',
               data: Array.from(valueByPartner.values()),
             },
           ],
-        } as ChartData<'bar'>,
+        } as ChartData<'doughnut'>,
       };
     }),
   );
@@ -200,14 +205,71 @@ export class Dashboard {
   readonly barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+
     plugins: {
       legend: {
         display: false,
       },
+
+      tooltip: {
+        displayColors: false,
+      },
     },
+
     scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+
+        border: {
+          display: false,
+        },
+
+        ticks: {
+          color: '#667085',
+        },
+      },
+
       y: {
         beginAtZero: true,
+
+        border: {
+          display: false,
+        },
+
+        grid: {
+          color: 'rgba(148, 163, 184, 0.18)',
+        },
+
+        ticks: {
+          color: '#667085',
+        },
+      },
+    },
+  };
+
+  readonly doughnutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+
+    cutout: '70%',
+
+    plugins: {
+      legend: {
+        position: 'right',
+
+        labels: {
+          usePointStyle: true,
+
+          pointStyle: 'circle',
+
+          boxWidth: 8,
+
+          padding: 18,
+
+          color: '#475467',
+        },
       },
     },
   };

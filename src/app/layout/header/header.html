@@ -1,21 +1,70 @@
-<mat-toolbar>
-  <div class="header__brand">
-    <mat-icon>schedule</mat-icon>
+<header class="header">
+  <mat-toolbar>
+    <a class="header__brand" routerLink="/" aria-label="Ir para o Dashboard">
+      <img src="/branding/falcon-time-logo.svg" alt="Falcon Time" class="header__logo" />
+    </a>
 
-    <span>Falcon Time</span>
-  </div>
+    <span class="header__spacer"></span>
 
-  <span class="header__spacer"></span>
+    @if (user$ | async; as user) {
+      <button
+        type="button"
+        class="header__account"
+        [matMenuTriggerFor]="accountMenu"
+        aria-label="Abrir menu da conta"
+      >
+        <div class="header__avatar">
+          @if (user.avatarUrl) {
+            <img [src]="user.avatarUrl" alt="Foto do usuário" />
+          } @else {
+            <span>
+              {{ user.initials }}
+            </span>
+          }
+        </div>
 
-  <div class="header__user">
-    <mat-icon>account_circle</mat-icon>
+        <div class="header__user-info">
+          <strong>
+            {{ user.name }}
+          </strong>
 
-    @if (userEmail$ | async; as userEmail) {
-      <span>{{ userEmail }}</span>
+          <span>
+            {{ user.email }}
+          </span>
+        </div>
+
+        <mat-icon class="header__account-arrow"> keyboard_arrow_down </mat-icon>
+      </button>
+
+      <mat-menu #accountMenu="matMenu" xPosition="before" class="header-account-menu">
+        <div class="header__menu-user" (click)="$event.stopPropagation()">
+          <div class="header__menu-avatar">
+            @if (user.avatarUrl) {
+              <img [src]="user.avatarUrl" alt="Foto do usuário" />
+            } @else {
+              <span>
+                {{ user.initials }}
+              </span>
+            }
+          </div>
+
+          <div>
+            <strong>
+              {{ user.name }}
+            </strong>
+
+            <span>
+              {{ user.email }}
+            </span>
+          </div>
+        </div>
+
+        <button mat-menu-item type="button" (click)="logout()">
+          <mat-icon> logout </mat-icon>
+
+          <span> Sair </span>
+        </button>
+      </mat-menu>
     }
-
-    <button mat-icon-button type="button" matTooltip="Sair" aria-label="Sair" (click)="logout()">
-      <mat-icon>logout</mat-icon>
-    </button>
-  </div>
-</mat-toolbar>
+  </mat-toolbar>
+</header>
